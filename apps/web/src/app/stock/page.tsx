@@ -4,7 +4,7 @@ import { Form, Input, Button, Dialog, Radio, Space } from "antd-mobile";
 
 const App = () => {
   const onClickLoadStockInfo = async () => {
-    const res = await fetch(`/api/stock?symbol=tsla&market=us`);
+    const res = await fetch(`/api/property?symbol=tsla&market=us`);
     console.log(res);
   };
   return (
