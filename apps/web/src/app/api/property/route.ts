@@ -1,18 +1,36 @@
 import { NextResponse, type NextRequest } from "next/server";
-// import { loadStokInfoUs } from "../../../business/aktools";
-// import dayjs from "dayjs";
-import { getModelProperty } from "@/app/lib/db";
+import { modelProperty, ModelPropertyHis, Property } from "@/app/lib/db";
+import dayjs from "dayjs";
 
 export async function GET(req: NextRequest) {
-  const model = await getModelProperty();
+  const { id } = Object.fromEntries(req.nextUrl.searchParams) as {
+    id: string;
+  };
 
-  const res = await model.findOne({
-    where: {
-      uid: "test",
-    },
-  });
+  const data = await modelProperty.getOne(+id);
 
   return NextResponse.json({
-    res,
+    data,
+  });
+}
+
+export async function POST(req: NextRequest) {
+  const json = await req.json();
+  const data: Property & { amount: number } = {
+    ...json,
+    uid: "test",
+  };
+  const res = await modelProperty.insertOrUpdate(data);
+  if (!Number(data.id)) {
+    ModelPropertyHis.insertOrUpdate({
+      uid: data.uid,
+      symbol: data.symbol,
+      amount: data.amount,
+      markDate: +dayjs().format("YYYYMMDD"),
+    });
+  }
+
+  return NextResponse.json({
+    data: res,
   });
 }
