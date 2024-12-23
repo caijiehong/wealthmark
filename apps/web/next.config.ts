@@ -1,12 +1,7 @@
 import type { NextConfig } from "next";
-import nextT from "next-transpile-modules";
 
-const nextConfig: NextConfig = nextT(["antd-mobile"])({
-  //   experimental: {
-  //     turbo: {
-  //       // ...
-  //     },
-  //   },
-});
+const nextConfig: NextConfig = {
+  transpilePackages: ["antd-mobile"],
+};
 
 export default nextConfig;
