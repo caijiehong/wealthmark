@@ -1,13 +1,25 @@
 import { type NextRequest } from "next/server";
-import { modelProperty, ModelPropertyHis, Property } from "@/app/lib/db";
+import {
+  modelProperty,
+  ModelPropertyHis,
+  Property,
+  PropertyHis,
+} from "@/app/lib/db";
 import dayjs from "dayjs";
 import { handlePost, handleGet } from "@/app/lib/request";
 import { getUserInfo } from "@/app/lib/userInfo";
 
 export async function GET(req: NextRequest) {
   return handleGet<{ id: string }>(req, async ({ id }) => {
-    const data = await modelProperty.getOne(+id);
-    return data;
+    const property = await modelProperty.getOne(+id);
+    let propertyHis: PropertyHis[] = [];
+    if (property) {
+      propertyHis = await ModelPropertyHis.getList(
+        property.uid,
+        property.symbol
+      );
+    }
+    return { property, propertyHis };
   });
 }
 

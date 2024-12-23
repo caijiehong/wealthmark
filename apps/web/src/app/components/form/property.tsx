@@ -1,3 +1,4 @@
+import { fetchProperty } from "@/app/client/api";
 import { Property } from "@/app/lib/db";
 import { Currency, Market, MarketType } from "@/app/lib/enums";
 import { Form } from "antd-mobile";
@@ -68,15 +69,13 @@ export const useFormData = (id: number) => {
     if (!id) {
       return;
     }
-    fetch(`/api/property?id=${id}`)
-      .then((res) => res.json())
-      .then((res: { data: Property }) => {
-        const d = {
-          ...initialValues,
-          ...res.data,
-        };
-        form.setFieldsValue(d);
-      });
+    fetchProperty(id).then((data) => {
+      const d = {
+        ...initialValues,
+        ...data,
+      };
+      form.setFieldsValue(d);
+    });
   }, [id]);
 
   const onFinish = async (values: IPropertyForm) => {

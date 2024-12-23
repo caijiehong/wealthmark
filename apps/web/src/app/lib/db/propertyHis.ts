@@ -9,6 +9,29 @@ import {
 } from "sequelize";
 import { getDbInstance } from "./connect";
 
+export interface PropertyHisAttributes {
+  /**
+   * 所属用户
+   */
+  uid: string;
+  /**
+   * - 资产编号, 比如股票基金代码
+   * - 如果是现金, 则为币种编号
+   */
+  symbol: string;
+
+  /**
+   * - 记录日期
+   * @example 20210101
+   */
+  markDate: number;
+
+  /**
+   * - 资产数额
+   */
+  amount: number;
+}
+
 // order of InferAttributes & InferCreationAttributes is important.
 class PropertyHis extends Model<
   InferAttributes<PropertyHis>,
@@ -110,12 +133,14 @@ async function getOne(id: number) {
   return res;
 }
 
-async function getList(uid: string) {
+async function getList(uid: string, symbol: string) {
   const model = await getModelPropertyHis();
   return model.findAll({
     where: {
       uid,
+      symbol,
     },
+    order: [["markDate", "DESC"]],
   });
 }
 

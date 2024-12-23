@@ -23,9 +23,9 @@ const App = () => {
         {properties.map((property: Property) => (
           <List.Item
             key={property.symbol}
-            extra={property.name}
+            extra={property.symbol}
             onClick={() => {
-              router.push(`/property?id=${property.id}`);
+              router.push(`/pages/property?id=${property.id}`);
             }}
           >
             {property.name}
@@ -40,7 +40,7 @@ const App = () => {
           "--edge-distance": "24px",
         }}
         onClick={() => {
-          router.push(`/property`);
+          router.push(`/pages/property-edit`);
         }}
       >
         <AddOutline fontSize={32} />
