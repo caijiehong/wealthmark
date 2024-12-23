@@ -1,36 +1,30 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { modelProperty, ModelPropertyHis, Property } from "@/app/lib/db";
 import dayjs from "dayjs";
+import { handlePost, handleGet } from "@/app/lib/request";
+import { getUserInfo } from "@/app/lib/userInfo";
 
 export async function GET(req: NextRequest) {
-  const { id } = Object.fromEntries(req.nextUrl.searchParams) as {
-    id: string;
-  };
-
-  const data = await modelProperty.getOne(+id);
-
-  return NextResponse.json({
-    data,
+  return handleGet<{ id: string }>(req, async ({ id }) => {
+    const data = await modelProperty.getOne(+id);
+    return data;
   });
 }
 
 export async function POST(req: NextRequest) {
-  const json = await req.json();
-  const data: Property & { amount: number } = {
-    ...json,
-    uid: "test",
-  };
-  const res = await modelProperty.insertOrUpdate(data);
-  if (!Number(data.id)) {
-    ModelPropertyHis.insertOrUpdate({
-      uid: data.uid,
-      symbol: data.symbol,
-      amount: data.amount,
-      markDate: +dayjs().format("YYYYMMDD"),
-    });
-  }
+  return handlePost<Property & { amount: number }>(req, async (data) => {
+    const userInfo = await getUserInfo();
+    data.uid = userInfo.uid;
+    const res = await modelProperty.insertOrUpdate(data);
+    if (!Number(data.id)) {
+      ModelPropertyHis.insertOrUpdate({
+        uid: data.uid,
+        symbol: data.symbol,
+        amount: data.amount,
+        markDate: +dayjs().format("YYYYMMDD"),
+      });
+    }
 
-  return NextResponse.json({
-    data: res,
+    return res;
   });
 }

@@ -8,7 +8,7 @@ import { AddOutline } from "antd-mobile-icons";
 const App = () => {
   const [properties, setProperties] = React.useState<Property[]>([]);
   React.useEffect(() => {
-    fetch("/api/list?uid=test")
+    fetch("/api/list")
       .then((res) => res.json())
       .then((res: { data: Property[] }) => {
         setProperties(res.data);

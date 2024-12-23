@@ -1,4 +1,5 @@
 import { Property } from "@/app/lib/db";
+import { Currency, Market, MarketType } from "@/app/lib/enums";
 import { Form } from "antd-mobile";
 import React from "react";
 
@@ -40,19 +41,27 @@ export interface IPropertyForm {
    * - 资产币种: cny, usd, hkd
    */
   currency: string;
+
+  /**
+   * - 资产星标
+   * - 0: 未标记
+   * - 1: 重要资产
+   */
+  flag: number;
 }
 
 export const useFormData = (id: number) => {
   const [form] = Form.useForm<IPropertyForm>();
   const initialValues: IPropertyForm = {
     id,
-    market: "cn",
-    marketType: "china",
-    currency: "cny",
+    market: Market.hk,
+    marketType: MarketType.china,
+    currency: Currency.hkd,
     symbol: "",
     name: "",
     desc: "",
     amount: 0,
+    flag: 0,
   };
 
   React.useEffect(() => {
@@ -75,14 +84,13 @@ export const useFormData = (id: number) => {
       ...initialValues,
       ...values,
     };
-    const res = await fetch(`/api/property`, {
+    await fetch(`/api/property`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(d),
     });
-    console.log(res);
   };
 
   return {

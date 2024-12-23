@@ -1,12 +1,16 @@
+import { IStockHkSpotEmItem } from "./types";
+
 async function fetchAktools<T>(
   apiName: string,
-  params: Record<string, string>
+  params?: Record<string, string>
 ) {
   const url = `http://127.0.0.1:8888/api/public/${apiName}`;
 
   const urlWithParams = new URL(url);
-  for (const key in params) {
-    urlWithParams.searchParams.append(key, params[key]!);
+  if (params) {
+    for (const key in params) {
+      urlWithParams.searchParams.append(key, params[key]!);
+    }
   }
 
   const res = await fetch(urlWithParams, {
@@ -37,4 +41,18 @@ export async function loadStokInfoUs(
   });
 
   return res;
+}
+
+export async function loadStockRealTimeAll() {
+  const res = await fetchAktools<IStockHkSpotEmItem[]>("stock_hk_spot_em");
+
+  return res;
+}
+
+export async function loadStockRealTime(symbol: string) {
+  const res = await loadStockRealTimeAll();
+
+  const findObj = res.find((item) => item["代码"] === symbol);
+
+  return findObj;
 }

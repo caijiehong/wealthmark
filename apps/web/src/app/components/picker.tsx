@@ -19,12 +19,12 @@ const FormPicker: React.FC<FormPickerProps> = ({
       name={formItemName}
       label={formItemLabel}
       trigger="onConfirm"
-      getValueFromEvent={(v) => {
+      getValueFromEvent={(v: string[]) => {
         // 这个函数会在 onFinish 的时候调用
         // 用于把 form 需要的字段值从数组结构转为单值
         return v[0];
       }}
-      getValueProps={(v) => {
+      getValueProps={(v: string) => {
         // 这个函数会在本组件初始化的时候调用
         // 用于把上一层 Form 的 字符串单值转为数组结构
         return { value: [v] };

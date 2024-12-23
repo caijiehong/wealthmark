@@ -1,10 +1,17 @@
 "use client";
-import React, { useMemo } from "react";
-import { Button, Form, Input } from "antd-mobile";
+import React from "react";
+import { Button, Form, Input, Switch } from "antd-mobile";
 import { useSearchParams } from "next/navigation";
 import FormPicker from "@/app/components/picker";
 import { IPropertyForm, useFormData } from "@/app/components/form/property";
-import { market, marketType, currency } from "@/app/lib/enums";
+import {
+  market,
+  marketType,
+  currency,
+  Market,
+  MarketType,
+  Currency,
+} from "@/app/lib/enums";
 
 const App = () => {
   const params = useSearchParams();
@@ -13,17 +20,38 @@ const App = () => {
 
   const { form, onFinish, initialValues } = useFormData(id);
   const [disableMarketType, setDisableMarketType] = React.useState(false);
+  const [disableCurrency, setDisableCurrency] = React.useState(false);
 
   const [isCash, setIsCash] = React.useState(false);
 
   const onValuesChange = (_changeVal: any, values: IPropertyForm) => {
-    const isCash = values.market === "cash";
+    const isCash = values.market === Market.cash;
     setIsCash(isCash);
+    setDisableMarketType(isCash);
+    setDisableCurrency(!isCash);
     if (isCash) {
-      setDisableMarketType(true);
-      form.setFieldValue("marketType", "cash");
-    } else {
-      setDisableMarketType(false);
+      form.setFieldValue("marketType", MarketType.cash);
+    } else if (values.market === Market.cn) {
+      form.setFieldValue("currency", Currency.cny);
+    } else if (values.market === Market.hk) {
+      form.setFieldValue("currency", Currency.hkd);
+    } else if (values.market === Market.us) {
+      form.setFieldValue("currency", Currency.usd);
+    }
+  };
+  const onSymbolBlur = async () => {
+    const symbol = form.getFieldValue("symbol").trim();
+    if (!symbol) {
+      return;
+    }
+    const res = await fetch(
+      `/api/aktools?market=${initialValues.market}&symbol=${symbol}`
+    );
+    const json = await res.json();
+    if (json.data) {
+      form.setFieldsValue({
+        name: json.data.name,
+      });
     }
   };
   return (
@@ -56,6 +84,7 @@ const App = () => {
       <FormPicker
         formItemName="currency"
         formItemLabel="币种"
+        disabled={disableCurrency}
         columns={[currency]}
       />
       {isCash ? null : (
@@ -64,13 +93,14 @@ const App = () => {
           label="股票基金代码"
           rules={[{ required: true, message: "股票基金代码不能为空" }]}
         >
-          <Input />
+          <Input onBlur={onSymbolBlur} />
         </Form.Item>
       )}
       {isCash ? null : (
         <Form.Item
           name="name"
           label="资产名称"
+          disabled={true}
           rules={[{ required: true, message: "资产名称不能为空" }]}
         >
           <Input />
@@ -85,6 +115,16 @@ const App = () => {
           <Input />
         </Form.Item>
       )}
+      <Form.Item
+        name="flag"
+        label="星标"
+        childElementPosition="right"
+        valuePropName="checked"
+        getValueFromEvent={(v: boolean) => (v ? 1 : 0)}
+        getValueProps={(v: number) => ({ checked: v > 0 })}
+      >
+        <Switch />
+      </Form.Item>
       <Form.Item name="desc" label="描述">
         <Input />
       </Form.Item>

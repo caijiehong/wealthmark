@@ -1,16 +1,14 @@
 import { modelProperty } from "@/app/lib/db";
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
+import { handleGet } from "@/app/lib/request";
+import { getUserInfo } from "@/app/lib/userInfo";
 
-export async function GET(req: NextRequest, abc: any) {
-  console.log("abc", abc);
+export async function GET(req: NextRequest) {
+  return handleGet(req, async () => {
+    const { uid } = await getUserInfo();
 
-  const { uid } = Object.fromEntries(req.nextUrl.searchParams) as {
-    uid: string;
-  };
+    const data = await modelProperty.getList(uid);
 
-  const data = await modelProperty.getList(uid);
-
-  return NextResponse.json({
-    data,
+    return data;
   });
 }

@@ -59,6 +59,13 @@ class Property extends Model<
    * - 资产币种: cny, usd, hkd
    */
   declare currency: string;
+
+  /**
+   * - 资产星标
+   * - 0: 未标记
+   * - 1: 重要资产
+   */
+  declare flag: number;
 }
 
 async function defineModelProperty(sequelize: Sequelize) {
@@ -98,8 +105,18 @@ async function defineModelProperty(sequelize: Sequelize) {
       currency: {
         type: DataTypes.CHAR(16),
       },
+      flag: {
+        type: DataTypes.TINYINT,
+        defaultValue: 0,
+      },
     },
     {
+      indexes: [
+        {
+          unique: false,
+          fields: ["uid"],
+        },
+      ],
       sequelize,
       tableName: "property",
     }

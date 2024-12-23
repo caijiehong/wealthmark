@@ -75,6 +75,12 @@ async function defineModelProperty(sequelize: Sequelize) {
     },
     {
       sequelize,
+      indexes: [
+        {
+          unique: false,
+          fields: ["uid", "symbol"],
+        },
+      ],
       tableName: "propertyHis",
     }
   );
