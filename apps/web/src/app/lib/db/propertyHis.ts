@@ -75,7 +75,7 @@ async function defineModelProperty(sequelize: Sequelize) {
     },
     {
       sequelize,
-      modelName: "propertyHis",
+      tableName: "propertyHis",
     }
   );
   await model.sync({ alter: true });
