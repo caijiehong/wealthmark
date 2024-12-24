@@ -11,6 +11,8 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@antv/f2": "^5.7.4",
+    "@antv/f2-react": "^5.7.4",
     "@repo/ui": "workspace:*",
     "antd-mobile": "^5.38.1",
     "antd-mobile-icons": "^0.3.0",

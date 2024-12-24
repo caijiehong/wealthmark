@@ -21,3 +21,13 @@ export async function handlePost<Body = {}, ResData = unknown>(
     data,
   });
 }
+export async function handleDelete<Body = {}, ResData = unknown>(
+  req: NextRequest,
+  handler: (body: Body) => Promise<ResData>
+) {
+  const body: Body = await req.json();
+  const data = await handler(body);
+  return NextResponse.json({
+    data,
+  });
+}

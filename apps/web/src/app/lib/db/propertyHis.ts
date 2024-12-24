@@ -93,7 +93,7 @@ async function defineModelProperty(sequelize: Sequelize) {
         type: DataTypes.INTEGER.UNSIGNED,
       },
       amount: {
-        type: DataTypes.DECIMAL(10, 2),
+        type: DataTypes.INTEGER.UNSIGNED,
       },
     },
     {
@@ -150,6 +150,7 @@ async function insertOrUpdate(data: CreationAttributes<PropertyHis>) {
     where: {
       uid: data.uid,
       symbol: data.symbol,
+      markDate: data.markDate,
     },
   });
   if (item) {
@@ -161,6 +162,18 @@ async function insertOrUpdate(data: CreationAttributes<PropertyHis>) {
   return data;
 }
 
+async function deleteItem(uid: string, symbol: string, markDate: number) {
+  const model = await getModelPropertyHis();
+  const item = await model.destroy({
+    where: {
+      uid,
+      symbol,
+      markDate,
+    },
+  });
+  return item;
+}
+
 export type { PropertyHis };
 
-export default { getOne, getList, insertOrUpdate };
+export default { getOne, getList, insertOrUpdate, deleteItem };
