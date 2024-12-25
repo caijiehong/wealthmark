@@ -7,7 +7,7 @@ export async function handleGet<Query = {}, ResData = unknown>(
   const query = Object.fromEntries(req.nextUrl.searchParams) as Query;
 
   const data = await handler(query);
-  return NextResponse.json({
+  return NextResponse.json<{ data: ResData }>({
     data,
   });
 }
@@ -17,7 +17,7 @@ export async function handlePost<Body = {}, ResData = unknown>(
 ) {
   const body: Body = await req.json();
   const data = await handler(body);
-  return NextResponse.json({
+  return NextResponse.json<{ data: ResData }>({
     data,
   });
 }
@@ -27,7 +27,7 @@ export async function handleDelete<Body = {}, ResData = unknown>(
 ) {
   const body: Body = await req.json();
   const data = await handler(body);
-  return NextResponse.json({
+  return NextResponse.json<{ data: ResData }>({
     data,
   });
 }

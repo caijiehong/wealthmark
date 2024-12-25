@@ -9,29 +9,6 @@ import {
 } from "sequelize";
 import { getDbInstance } from "./connect";
 
-export interface PropertyHisAttributes {
-  /**
-   * 所属用户
-   */
-  uid: string;
-  /**
-   * - 资产编号, 比如股票基金代码
-   * - 如果是现金, 则为币种编号
-   */
-  symbol: string;
-
-  /**
-   * - 记录日期
-   * @example 20210101
-   */
-  markDate: number;
-
-  /**
-   * - 资产数额
-   */
-  amount: number;
-}
-
 // order of InferAttributes & InferCreationAttributes is important.
 class PropertyHis extends Model<
   InferAttributes<PropertyHis>,
@@ -66,6 +43,13 @@ class PropertyHis extends Model<
    */
   declare amount: number;
 }
+
+export type PropertyHisAttributes = InferAttributes<
+  PropertyHis,
+  {
+    omit: never;
+  }
+>;
 
 async function defineModelProperty(sequelize: Sequelize) {
   const model = PropertyHis.init(
@@ -130,18 +114,22 @@ async function getOne(id: number) {
     },
   });
 
-  return res;
+  return res ? res.toJSON() : null;
 }
 
-async function getList(uid: string, symbol: string) {
+async function getList(
+  uid: string,
+  symbol: string
+): Promise<PropertyHisAttributes[]> {
   const model = await getModelPropertyHis();
-  return model.findAll({
+  const res = await model.findAll({
     where: {
       uid,
       symbol,
     },
     order: [["markDate", "DESC"]],
   });
+  return res.map((item) => item.toJSON());
 }
 
 async function insertOrUpdate(data: CreationAttributes<PropertyHis>) {
@@ -173,7 +161,5 @@ async function deleteItem(uid: string, symbol: string, markDate: number) {
   });
   return item;
 }
-
-export type { PropertyHis };
 
 export default { getOne, getList, insertOrUpdate, deleteItem };

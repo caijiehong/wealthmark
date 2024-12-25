@@ -1,52 +1,14 @@
-"use client";
 import React from "react";
-import { List, FloatingBubble } from "antd-mobile";
-import { Property } from "@/app/lib/db/property";
-import { useRouter } from "next/navigation";
-import { AddOutline } from "antd-mobile-icons";
+import { getUserInfo } from "@/app/lib/userInfo";
+import { modelProperty } from "@/app/lib/db";
+import HomeList from "@/app/components/home/list";
 
-const App = () => {
-  const [properties, setProperties] = React.useState<Property[]>([]);
-  React.useEffect(() => {
-    fetch("/api/list")
-      .then((res) => res.json())
-      .then((res: { data: Property[] }) => {
-        setProperties(res.data);
-      });
-  }, []);
+const App = async () => {
+  const { uid } = await getUserInfo();
 
-  const router = useRouter();
+  const data = await modelProperty.getList(uid);
 
-  return (
-    <>
-      <List header="资产列表">
-        {properties.map((property: Property) => (
-          <List.Item
-            key={property.symbol}
-            extra={property.symbol}
-            onClick={() => {
-              router.push(`/pages/property?id=${property.id}`);
-            }}
-          >
-            {property.name}
-          </List.Item>
-        ))}
-      </List>
-      <FloatingBubble
-        axis="lock"
-        style={{
-          "--initial-position-bottom": "24px",
-          "--initial-position-right": "24px",
-          "--edge-distance": "24px",
-        }}
-        onClick={() => {
-          router.push(`/pages/property-edit`);
-        }}
-      >
-        <AddOutline fontSize={32} />
-      </FloatingBubble>
-    </>
-  );
+  return <HomeList properties={data} />;
 };
 
 export default App;

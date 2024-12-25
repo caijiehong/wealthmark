@@ -5,56 +5,9 @@ import {
   CreationOptional,
   Sequelize,
   DataTypes,
+  CreationAttributes,
 } from "sequelize";
 import { getDbInstance } from "./connect";
-
-export interface PropertyAttributes {
-  /**
-   * 所属用户
-   */
-  uid: string;
-  /**
-   * - 资产编号, 比如股票基金代码
-   * - 如果是现金, 则为币种编号
-   */
-  symbol: string;
-
-  /**
-   * - 资产名称
-   */
-  name: string;
-
-  /**
-   * - 资产描述
-   */
-  desc: string;
-  /**
-   * - 所属市场
-   * - cn: 中国市场
-   * - us: 美国市场
-   * - hk: 香港市场
-   * - cash: 现金
-   */
-  market: string;
-  /**
-   * - 投资标的类型: 国内标的 or 国际标的
-   * - china: 国内标的
-   * - global: 国际标的
-   * - cash: 现金
-   */
-  marketType: string;
-  /**
-   * - 资产币种: cny, usd, hkd
-   */
-  currency: string;
-
-  /**
-   * - 资产星标
-   * - 0: 未标记
-   * - 1: 重要资产
-   */
-  flag: number;
-}
 
 // order of InferAttributes & InferCreationAttributes is important.
 class Property extends Model<
@@ -115,6 +68,12 @@ class Property extends Model<
    */
   declare flag: number;
 }
+export type PropertyAttributes = InferAttributes<
+  Property,
+  {
+    omit: never;
+  }
+>;
 
 async function defineModelProperty(sequelize: Sequelize) {
   const model = Property.init(
@@ -192,19 +151,20 @@ async function getOne(id: number) {
     },
   });
 
-  return res;
+  return res ? res.toJSON() : null;
 }
 
-async function getList(uid: string) {
+async function getList(uid: string): Promise<PropertyAttributes[]> {
   const model = await getModelProperty();
-  return model.findAll({
+  const res = await model.findAll({
     where: {
       uid,
     },
   });
+  return res.map((item) => item.toJSON());
 }
 
-async function insertOrUpdate(data: Property) {
+async function insertOrUpdate(data: CreationAttributes<Property>) {
   const model = await getModelProperty();
   const item = await model.findOne({
     where: {
@@ -220,7 +180,5 @@ async function insertOrUpdate(data: Property) {
 
   return data;
 }
-
-export type { Property };
 
 export default { getOne, getList, insertOrUpdate };
