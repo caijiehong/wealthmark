@@ -170,4 +170,22 @@ async function deleteList(uid: string, symbol: string) {
   return item;
 }
 
-export default { getOne, getList, insertOrUpdate, deleteItem, deleteList };
+async function getListByUid(uid: string) {
+  const model = await getModelPropertyHis();
+  const res = await model.findAll({
+    where: {
+      uid,
+    },
+    order: [["markDate", "DESC"]],
+  });
+  return res.map((item) => item.toJSON());
+}
+
+export default {
+  getOne,
+  getList,
+  insertOrUpdate,
+  deleteItem,
+  deleteList,
+  getListByUid,
+};
