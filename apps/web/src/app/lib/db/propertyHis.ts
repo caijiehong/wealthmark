@@ -8,6 +8,9 @@ import {
   CreationAttributes,
 } from "sequelize";
 import { getDbInstance } from "./connect";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { revalidateTag } from "next/cache";
 
 // order of InferAttributes & InferCreationAttributes is important.
 class PropertyHis extends Model<
@@ -133,6 +136,7 @@ async function getList(
 }
 
 async function insertOrUpdate(data: CreationAttributes<PropertyHis>) {
+  revalidateTag("propertyHis_list");
   const model = await getModelPropertyHis();
   if (data.id && data.id > 0) {
     await model.destroy({
@@ -148,6 +152,7 @@ async function insertOrUpdate(data: CreationAttributes<PropertyHis>) {
 }
 
 async function deleteItem(uid: string, symbol: string, markDate: number) {
+  revalidateTag("propertyHis_list");
   const model = await getModelPropertyHis();
   const item = await model.destroy({
     where: {
@@ -160,6 +165,7 @@ async function deleteItem(uid: string, symbol: string, markDate: number) {
 }
 
 async function deleteList(uid: string, symbol: string) {
+  revalidateTag("propertyHis_list");
   const model = await getModelPropertyHis();
   const item = await model.destroy({
     where: {
@@ -171,6 +177,9 @@ async function deleteList(uid: string, symbol: string) {
 }
 
 async function getListByUid(uid: string) {
+  "use cache";
+  cacheTag("propertyHis_list");
+  cacheLife("hours");
   const model = await getModelPropertyHis();
   const res = await model.findAll({
     where: {

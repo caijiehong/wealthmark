@@ -1,8 +1,4 @@
-import {
-  ModelPropertyHis,
-  PropertyAttributes,
-  PropertyHisAttributes,
-} from "../lib/db";
+import { PropertyHisAttributes } from "../lib/db";
 import dayjs from "dayjs";
 import { Currency, Market } from "../lib/enums";
 import { getPriceHisWeek } from "./priceHis";
@@ -14,6 +10,7 @@ export interface PropertyHisWeek {
   amount: number;
   price: number;
   value: number;
+  percent?: number;
 }
 
 interface IWeek {
@@ -27,7 +24,7 @@ interface IWeek {
   dateEnd: dayjs.Dayjs;
 }
 
-async function getPropertyHisByWeeks({
+export async function getPropertyHisByWeeks({
   market,
   symbol,
   currency,
@@ -126,48 +123,4 @@ export async function getPropertyHisWeek({
   });
 
   return list.reverse();
-}
-
-export async function getUserPropertyHisWeek({
-  uid,
-  propertyList,
-}: {
-  uid: string;
-  propertyList: PropertyAttributes[];
-}): Promise<PropertyHisWeek[]> {
-  const weeks = getWeekList(15);
-  const list = await ModelPropertyHis.getListByUid(uid);
-
-  const pList = propertyList.map(async (property) => {
-    const propertyHis = list.filter((his) => his.symbol === property.symbol);
-    const weekHis = await getPropertyHisByWeeks({
-      market: property.market,
-      symbol: property.symbol,
-      currency: property.currency,
-      propertyHis,
-      weeks,
-    });
-
-    return weekHis;
-  });
-
-  const allList = await Promise.all(pList);
-  return weeks
-    .map((week, index) => {
-      const dateStart = +week.dateStart.format("YYYYMMDD");
-      const dateEnd = +week.dateEnd.format("YYYYMMDD");
-
-      const value = allList.reduce((prev, curr) => {
-        return prev + curr[index]!.value;
-      }, 0);
-
-      return {
-        dateStart,
-        dateEnd,
-        amount: 0,
-        price: 0,
-        value,
-      };
-    })
-    .reverse();
 }

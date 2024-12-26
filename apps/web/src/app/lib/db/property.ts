@@ -9,6 +9,9 @@ import {
 } from "sequelize";
 import { getDbInstance } from "./connect";
 import { Currency, Market, MarketType } from "../enums";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { revalidateTag } from "next/cache";
 
 // order of InferAttributes & InferCreationAttributes is important.
 class Property extends Model<
@@ -156,6 +159,10 @@ async function getOne(id: number) {
 }
 
 async function getList(uid: string): Promise<PropertyAttributes[]> {
+  "use cache";
+  cacheTag("property_list");
+  cacheLife("hours");
+
   const model = await getModelProperty();
   const res = await model.findAll({
     where: {
@@ -166,6 +173,7 @@ async function getList(uid: string): Promise<PropertyAttributes[]> {
 }
 
 async function insertOrUpdate(data: CreationAttributes<Property>) {
+  revalidateTag("property_list");
   const model = await getModelProperty();
   const item = await model.findOne({
     where: {
@@ -183,6 +191,7 @@ async function insertOrUpdate(data: CreationAttributes<Property>) {
 }
 
 async function remove(id: number, uid: string, symbol: string) {
+  revalidateTag("property_list");
   const model = await getModelProperty();
   await model.destroy({
     where: {

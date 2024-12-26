@@ -8,13 +8,13 @@ import dayjs from "dayjs";
 
 const App: React.FC<{
   weekHis: PropertyHisWeek[];
-  symbol: string;
-}> = ({ weekHis, symbol }) => {
+}> = ({ weekHis }) => {
   const chartData = weekHis.map((item) => {
     return {
       day: dayjs(`${item.dateEnd} 00:00`).format("MM-DD"),
       amount: item.amount,
       value: item.value,
+      percent: item.percent,
     };
   });
 
@@ -24,9 +24,9 @@ const App: React.FC<{
         <Chart data={chartData}>
           <Axis field="value" tickCount={10} />
           <Axis field="day" tickCount={8} />
-          {/* <Axis field="percent" tickCount={3} position="right" /> */}
-          <Interval x="day" y="value" />
-          {/* <Line x="date" y="percent" color={"red"} /> */}
+          <Axis field="percent" tickCount={10} position="right" />
+          <Line x="day" y="percent" />
+          <Interval x="day" y="value" color="grey" />
         </Chart>
       </Canvas>
     </>

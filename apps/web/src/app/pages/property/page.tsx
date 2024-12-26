@@ -8,42 +8,35 @@ import {
   ModelPropertyHis,
   PropertyHisAttributes,
 } from "@/app/lib/db";
-import {
-  getPropertyHisWeek,
-  PropertyHisWeek,
-} from "@/app/business/propertyHis";
+import { getUserInfo } from "@/app/lib/userInfo";
+import { getUserPropertyHisWeek } from "@/app/business/userPropertyHis";
 
 const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
   const { id } = await searchParams;
-  const property = await modelProperty.getOne(+id);
+  const { uid } = await getUserInfo();
+  const propertyList = await modelProperty.getList(uid);
+  const property = propertyList.find((item) => item.id === Number(id));
 
   if (!property) {
     throw new Error("Property not found");
   }
 
   let propertyHisOri: PropertyHisAttributes[] = [];
-  let weekHis: PropertyHisWeek[] = [];
+  const chartData = await getUserPropertyHisWeek({ uid, propertyList });
+  const weekHis =
+    chartData.allList.find((c) => c.symbol === property.symbol)?.weekHis || [];
   if (property) {
     propertyHisOri = await ModelPropertyHis.getList(
       property.uid,
       property.symbol
     );
-
-    if (propertyHisOri.length) {
-      weekHis = await getPropertyHisWeek({
-        symbol: property.symbol,
-        market: property.market,
-        currency: property.currency,
-        propertyHis: propertyHisOri,
-      });
-    }
   }
 
   return (
     <>
       <Info property={property} />
 
-      <Chart weekHis={weekHis} symbol={property.symbol} />
+      <Chart weekHis={weekHis} />
 
       <His symbol={property.symbol} propertyHisOri={propertyHisOri} />
 
