@@ -8,6 +8,7 @@ import {
   CreationAttributes,
 } from "sequelize";
 import { getDbInstance } from "./connect";
+import { Currency } from "../enums";
 
 // order of InferAttributes & InferCreationAttributes is important.
 class Property extends Model<
@@ -59,7 +60,7 @@ class Property extends Model<
   /**
    * - 资产币种: cny, usd, hkd
    */
-  declare currency: string;
+  declare currency: Currency;
 
   /**
    * - 资产星标

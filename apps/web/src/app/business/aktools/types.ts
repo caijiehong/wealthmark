@@ -35,3 +35,18 @@ export interface IStock_hk_hist {
   ["涨跌额"]: number;
   ["换手率"]: number;
 }
+
+export interface ICurrency_boc_sina {
+  /**
+   * @example "2024-12-18T00:00:00.000"
+   */
+  ["日期"]: string;
+  ["中行汇买价"]: number;
+  ["中行钞买价"]: number;
+  ["中行钞卖价/汇卖价"]: number;
+  /**
+   * 汇率中间价, 基础换算单位是 100 人民币
+   * @example 718.8
+   */
+  ["央行中间价"]: number;
+}

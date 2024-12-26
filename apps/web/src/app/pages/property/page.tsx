@@ -31,6 +31,7 @@ const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
     if (propertyHisOri.length) {
       weekHis = await getPropertyHisWeek({
         symbol: property.symbol,
+        currency: property.currency,
         propertyHis: propertyHisOri,
       });
     }

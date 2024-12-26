@@ -1,5 +1,9 @@
-import { Market } from "@/app/lib/enums";
-import { IStock_hk_hist, IStockHkSpotEmItem } from "./types";
+import { Currency, Market } from "@/app/lib/enums";
+import {
+  ICurrency_boc_sina,
+  IStock_hk_hist,
+  IStockHkSpotEmItem,
+} from "./types";
 
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
@@ -91,4 +95,29 @@ export async function loadStockHis(symbol: string, market: Market) {
   const findObj = res.find((item) => item["代码"] === symbol);
 
   return findObj;
+}
+
+export async function currency_boc_sina(
+  currency: Currency,
+  start_date: string,
+  end_date: string
+): Promise<ICurrency_boc_sina[]> {
+  if (currency === Currency.cny) {
+    return [];
+  }
+
+  const cur =
+    currency === Currency.hkd
+      ? "港币"
+      : currency === Currency.usd
+        ? "美元"
+        : "人民币";
+
+  const res = await fetchAktools<ICurrency_boc_sina[]>("currency_boc_sina", {
+    symbol: cur,
+    start_date,
+    end_date,
+  });
+
+  return res;
 }
