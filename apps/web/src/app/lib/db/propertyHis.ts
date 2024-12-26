@@ -134,20 +134,17 @@ async function getList(
 
 async function insertOrUpdate(data: CreationAttributes<PropertyHis>) {
   const model = await getModelPropertyHis();
-  const item = await model.findOne({
-    where: {
-      uid: data.uid,
-      symbol: data.symbol,
-      markDate: data.markDate,
-    },
-  });
-  if (item) {
-    await item.update(data);
-  } else {
-    await model.create(data);
+  if (data.id && data.id > 0) {
+    await model.destroy({
+      where: {
+        uid: data.uid,
+        id: data.id,
+      },
+    });
   }
+  const res = await model.create(data);
 
-  return data;
+  return res.toJSON();
 }
 
 async function deleteItem(uid: string, symbol: string, markDate: number) {
@@ -162,4 +159,15 @@ async function deleteItem(uid: string, symbol: string, markDate: number) {
   return item;
 }
 
-export default { getOne, getList, insertOrUpdate, deleteItem };
+async function deleteList(uid: string, symbol: string) {
+  const model = await getModelPropertyHis();
+  const item = await model.destroy({
+    where: {
+      uid,
+      symbol,
+    },
+  });
+  return item;
+}
+
+export default { getOne, getList, insertOrUpdate, deleteItem, deleteList };

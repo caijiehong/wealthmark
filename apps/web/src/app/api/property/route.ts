@@ -5,7 +5,7 @@ import {
   PropertyAttributes,
 } from "@/app/lib/db";
 import dayjs from "dayjs";
-import { handlePost } from "@/app/lib/request";
+import { handleDelete, handlePost } from "@/app/lib/request";
 import { getUserInfo } from "@/app/lib/userInfo";
 
 export async function POST(req: NextRequest) {
@@ -27,4 +27,14 @@ export async function POST(req: NextRequest) {
       return res;
     }
   );
+}
+export async function Delete(req: NextRequest) {
+  return handleDelete<PropertyAttributes>(req, async (data) => {
+    const userInfo = await getUserInfo();
+    data.uid = userInfo.uid;
+    const p1 = modelProperty.remove(data.id, userInfo.uid, data.symbol);
+    const p2 = ModelPropertyHis.deleteList(userInfo.uid, data.symbol);
+
+    return Promise.all([p1, p2]);
+  });
 }

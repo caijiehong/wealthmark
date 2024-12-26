@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     market: Market;
     symbol: string;
   }>(req, async ({ market, symbol }) => {
-    if (market === Market.hk) {
+    if (market === Market.HK) {
       const resHK = await loadStockRealTime(symbol);
       if (!resHK) {
         return null;

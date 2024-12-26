@@ -18,19 +18,20 @@ const App: React.FC<{
   const [editAmount, setEditAmount] = React.useState(0);
   const [editMarkDate, setEditMarkDate] = React.useState(0);
   const [propertyHis] = React.useState<PropertyHisAttributes[]>(propertyHisOri);
+  const [editId, setEditId] = React.useState(0);
 
-  const editHis = (markDate: number, amout: number) => {
+  const editHis = (markDate: number, amout: number, id: number) => {
+    setEditId(id);
     setEditAmount(amout);
     setEditMarkDate(markDate);
     setMaskVisible(true);
   };
 
   const onFinish = (values: IPropertyHisForm) => {
-    const findIndex = propertyHis.findIndex(
-      (c) => c.markDate === values.markDate
-    );
-    if (findIndex > -1) {
-      propertyHis[findIndex]!.amount = values.amount;
+    const findItem = propertyHis.find((c) => c.id === values.id);
+    if (findItem) {
+      findItem.amount = values.amount;
+      findItem.markDate = values.markDate;
     } else {
       // add item to propertyHis
       propertyHis.push({
@@ -42,8 +43,8 @@ const App: React.FC<{
         createdAt: new Date(),
         updatedAt: new Date(),
       });
-      propertyHis.sort((a, b) => b.markDate - a.markDate);
     }
+    propertyHis.sort((a, b) => b.markDate - a.markDate);
     setMaskVisible(false);
   };
   const onDelete = (values: IPropertyHisForm) => {
@@ -68,7 +69,7 @@ const App: React.FC<{
                 status="finish"
                 description={
                   <div
-                    onClick={() => editHis(item.markDate, item.amount)}
+                    onClick={() => editHis(item.markDate, item.amount, item.id)}
                   >{`当天数额：${item.amount}`}</div>
                 }
               />
@@ -86,7 +87,7 @@ const App: React.FC<{
       >
         <AddOutline
           fontSize={32}
-          onClick={() => editHis(+dayjs().format("YYYYMMDD"), 0)}
+          onClick={() => editHis(+dayjs().format("YYYYMMDD"), 0, 0)}
         />
       </FloatingBubble>
       <Popup
@@ -103,6 +104,7 @@ const App: React.FC<{
       >
         <Card title="💰当天资产数额">
           <FormPropertyHis
+            id={editId}
             symbol={symbol}
             amount={editAmount}
             markDate={editMarkDate}

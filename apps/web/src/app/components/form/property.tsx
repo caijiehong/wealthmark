@@ -1,4 +1,5 @@
 import { fetchProperty } from "@/app/client/api";
+import { PropertyAttributes } from "@/app/lib/db";
 import { Currency, Market, MarketType } from "@/app/lib/enums";
 import { Form } from "antd-mobile";
 import React from "react";
@@ -50,36 +51,23 @@ export interface IPropertyForm {
   flag: number;
 }
 
-export const useFormData = (id: number) => {
+export const useFormData = (property: PropertyAttributes) => {
   const [form] = Form.useForm<IPropertyForm>();
-  const initialValues: IPropertyForm = {
-    id,
-    market: Market.hk,
-    marketType: MarketType.china,
-    currency: Currency.hkd,
-    symbol: "",
-    name: "",
-    desc: "",
-    amount: 0,
-    flag: 0,
-  };
-
-  React.useEffect(() => {
-    if (!id) {
-      return;
-    }
-    fetchProperty(id).then((data) => {
-      const d = {
-        ...initialValues,
-        ...data,
-      };
-      form.setFieldsValue(d);
-    });
-  }, [id]);
+  // const initialValues: IPropertyForm = {
+  //   id,
+  //   market: Market.hk,
+  //   marketType: MarketType.china,
+  //   currency: Currency.hkd,
+  //   symbol: "",
+  //   name: "",
+  //   desc: "",
+  //   amount: 0,
+  //   flag: 0,
+  // };
 
   const onFinish = async (values: IPropertyForm) => {
     const d = {
-      ...initialValues,
+      ...property,
       ...values,
     };
     await fetch(`/api/property`, {
@@ -92,7 +80,6 @@ export const useFormData = (id: number) => {
   };
 
   return {
-    initialValues,
     form: form as ReturnType<typeof Form.useForm<IPropertyForm>>[0],
     onFinish,
   };

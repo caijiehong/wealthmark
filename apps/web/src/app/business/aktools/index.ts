@@ -102,14 +102,14 @@ export async function currency_boc_sina(
   start_date: string,
   end_date: string
 ): Promise<ICurrency_boc_sina[]> {
-  if (currency === Currency.cny) {
+  if (currency === Currency.CNY) {
     return [];
   }
 
   const cur =
-    currency === Currency.hkd
+    currency === Currency.HKD
       ? "港币"
-      : currency === Currency.usd
+      : currency === Currency.USD
         ? "美元"
         : "人民币";
 

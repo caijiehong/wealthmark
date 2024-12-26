@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import Info from "@/app/components/property/info";
 import His from "@/app/components/property/his";
 import Chart from "@/app/components/property/chart";
+import Action from "@/app/components/property/action";
 import {
   modelProperty,
   ModelPropertyHis,
@@ -31,6 +32,7 @@ const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
     if (propertyHisOri.length) {
       weekHis = await getPropertyHisWeek({
         symbol: property.symbol,
+        marketType: property.marketType,
         currency: property.currency,
         propertyHis: propertyHisOri,
       });
@@ -44,6 +46,8 @@ const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
       <Chart weekHis={weekHis} symbol={property.symbol} />
 
       <His symbol={property.symbol} propertyHisOri={propertyHisOri} />
+
+      <Action property={property} />
     </>
   );
 };

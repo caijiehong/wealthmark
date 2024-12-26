@@ -1,3 +1,4 @@
+import { PropertyHisAttributes } from "@/app/lib/db";
 import {
   Form,
   Input,
@@ -11,17 +12,20 @@ import dayjs from "dayjs";
 import React, { RefObject, useEffect } from "react";
 
 export interface IPropertyHisForm {
+  id: number;
   markDate: number;
   amount: number;
 }
 
 export const FormPropertyHis: React.FC<{
+  id: number;
   symbol: string;
   markDate: number;
   amount: number;
   onFinish: (values: IPropertyHisForm) => void;
   onDelete: (values: IPropertyHisForm) => void;
 }> = ({
+  id,
   markDate,
   amount,
   symbol,
@@ -35,15 +39,16 @@ export const FormPropertyHis: React.FC<{
   }, [markDate, amount]);
 
   const onFinish = async (values: IPropertyHisForm) => {
-    console.log("onFinish", values);
-    await fetch(`/api/propertyHis`, {
+    const saveData = { ...values, symbol, id };
+    const res = await fetch(`/api/propertyHis`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...values, symbol }),
+      body: JSON.stringify(saveData),
     });
-    onFinishProps(values);
+    const { data }: { data: PropertyHisAttributes } = await res.json();
+    onFinishProps(data);
   };
 
   const onDelete = async () => {
@@ -54,7 +59,7 @@ export const FormPropertyHis: React.FC<{
       },
       body: JSON.stringify({ markDate, symbol }),
     });
-    onDeleteProps({ markDate, amount: 0 });
+    onDeleteProps({ markDate, amount: 0, id });
   };
 
   return (

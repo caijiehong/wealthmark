@@ -8,7 +8,7 @@ import {
   CreationAttributes,
 } from "sequelize";
 import { getDbInstance } from "./connect";
-import { Currency } from "../enums";
+import { Currency, MarketType } from "../enums";
 
 // order of InferAttributes & InferCreationAttributes is important.
 class Property extends Model<
@@ -56,7 +56,7 @@ class Property extends Model<
    * - global: 国际标的
    * - cash: 现金
    */
-  declare marketType: string;
+  declare marketType: MarketType;
   /**
    * - 资产币种: cny, usd, hkd
    */
@@ -182,4 +182,15 @@ async function insertOrUpdate(data: CreationAttributes<Property>) {
   return data;
 }
 
-export default { getOne, getList, insertOrUpdate };
+async function remove(id: number, uid: string, symbol: string) {
+  const model = await getModelProperty();
+  await model.destroy({
+    where: {
+      id,
+      uid,
+      symbol,
+    },
+  });
+}
+
+export default { getOne, getList, insertOrUpdate, remove };

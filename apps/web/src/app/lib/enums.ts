@@ -1,37 +1,37 @@
 export enum Market {
-  cn = "cn",
-  hk = "hk",
-  us = "us",
-  cash = "cash",
+  CN = "CN",
+  HK = "HK",
+  US = "US",
+  CASH = "CASH",
 }
 export const mapMarket = [
-  { label: "A股", value: Market.cn },
-  { label: "港股", value: Market.hk },
-  { label: "美股", value: Market.us },
-  { label: "现金", value: Market.cash },
+  { label: "A股", value: Market.CN },
+  { label: "港股", value: Market.HK },
+  { label: "美股", value: Market.US },
+  { label: "现金", value: Market.CASH },
 ];
 
 export enum MarketType {
-  china = "china",
-  global = "global",
-  cash = "cash",
+  CHINA = "CHINA",
+  GLOBAL = "GLOBAL",
+  CASH = "CASH",
 }
 
 export const mapMarketType = [
-  { label: "中国资产", value: MarketType.china },
-  { label: "国际资产", value: MarketType.global },
-  { label: "现金", value: MarketType.cash },
+  { label: "中国资产", value: MarketType.CHINA },
+  { label: "国际资产", value: MarketType.GLOBAL },
+  { label: "现金", value: MarketType.CASH },
 ];
 export enum Currency {
-  cny = "cny",
-  hkd = "hkd",
-  usd = "usd",
+  CNY = "CNY",
+  HKD = "HKD",
+  USD = "USD",
 }
 
 export const mapCurrency = [
-  { label: "人民币", value: Currency.cny },
-  { label: "港币", value: Currency.hkd },
-  { label: "美元", value: Currency.usd },
+  { label: "人民币", value: Currency.CNY },
+  { label: "港币", value: Currency.HKD },
+  { label: "美元", value: Currency.USD },
 ];
 
 export function getCurrencyLabel(currency: Currency) {
