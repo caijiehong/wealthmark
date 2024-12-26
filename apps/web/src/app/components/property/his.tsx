@@ -42,6 +42,7 @@ const App: React.FC<{
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+      propertyHis.sort((a, b) => b.markDate - a.markDate);
     }
     setMaskVisible(false);
   };

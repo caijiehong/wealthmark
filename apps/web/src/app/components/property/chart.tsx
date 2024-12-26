@@ -1,22 +1,32 @@
 "use client";
 import React from "react";
 import Canvas from "@antv/f2-react";
-import { Chart, Interval } from "@antv/f2";
+import { Chart, Interval, Line, Axis } from "@antv/f2";
 
-const App: React.FC = () => {
-  const dataCanvas = [
-    { genre: "Sports", sold: 275 },
-    { genre: "Strategy", sold: 115 },
-    { genre: "Action", sold: 120 },
-    { genre: "Shooter", sold: 350 },
-    { genre: "Other", sold: 150 },
-  ];
+import { PropertyHisWeek } from "@/app/business/propertyHis";
+import dayjs from "dayjs";
+
+const App: React.FC<{
+  weekHis: PropertyHisWeek[];
+  symbol: string;
+}> = ({ weekHis, symbol }) => {
+  const chartData = weekHis.map((item) => {
+    return {
+      day: dayjs(`${item.dateEnd} 00:00`).format("MM-DD"),
+      amount: item.amount,
+      value: item.value,
+    };
+  });
 
   return (
     <>
       <Canvas>
-        <Chart data={dataCanvas}>
-          <Interval x="genre" y="sold" />
+        <Chart data={chartData}>
+          <Axis field="value" tickCount={10} />
+          <Axis field="day" tickCount={8} />
+          {/* <Axis field="percent" tickCount={3} position="right" /> */}
+          <Interval x="day" y="value" />
+          {/* <Line x="date" y="percent" color={"red"} /> */}
         </Chart>
       </Canvas>
     </>

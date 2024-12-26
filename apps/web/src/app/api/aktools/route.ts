@@ -1,6 +1,6 @@
 import { Market } from "@/app/lib/enums";
 import { type NextRequest } from "next/server";
-import { loadStockRealTime } from "@/business/aktools";
+import { loadStockRealTime } from "@/app/business/aktools";
 import { handleGet } from "@/app/lib/request";
 
 export async function GET(req: NextRequest) {
