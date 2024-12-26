@@ -64,7 +64,7 @@ const App: React.FC<{
           {propertyHis.map((item) => {
             return (
               <Step
-                key={item.markDate}
+                key={`${item.id}_${item.markDate}`}
                 title={dayjs(item.markDate.toString()).format("YYYY年MM月DD日")}
                 status="finish"
                 description={

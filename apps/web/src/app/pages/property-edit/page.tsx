@@ -1,10 +1,26 @@
 import React, { Suspense } from "react";
 import Client from "./client";
-import { modelProperty } from "@/app/lib/db";
+import { modelProperty, PropertyAttributes } from "@/app/lib/db";
+import { Currency, Market, MarketType } from "@/app/lib/enums";
 
 const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
   const { id } = await searchParams;
-  const property = await modelProperty.getOne(+id);
+  let property: PropertyAttributes | null = {
+    id: 0,
+    uid: "",
+    symbol: "",
+    market: Market.CN,
+    marketType: MarketType.CHINA,
+    currency: Currency.CNY,
+    name: "",
+    desc: "",
+    flag: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  if (+id > 0) {
+    property = await modelProperty.getOne(+id);
+  }
 
   if (!property) {
     throw new Error("Property not found");

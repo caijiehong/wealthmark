@@ -1,15 +1,15 @@
 import dayjs, { Dayjs } from "dayjs";
 import { stock_hk_hist } from "./aktools";
-import { MarketType } from "../lib/enums";
+import { Market } from "../lib/enums";
 
 export async function getPriceHisWeek({
-  marketType,
+  market,
   symbol,
   beginDate,
   endDate,
   weeks,
 }: {
-  marketType: MarketType;
+  market: Market;
   symbol: string;
   beginDate: Dayjs;
   endDate: Dayjs;
@@ -20,7 +20,7 @@ export async function getPriceHisWeek({
     price: number;
   }[] = [];
 
-  const isCash = marketType === MarketType.CASH;
+  const isCash = market === Market.CASH;
   if (!isCash) {
     stockHist = await stock_hk_hist(
       symbol,

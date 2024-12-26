@@ -8,7 +8,7 @@ import {
   CreationAttributes,
 } from "sequelize";
 import { getDbInstance } from "./connect";
-import { Currency, MarketType } from "../enums";
+import { Currency, Market, MarketType } from "../enums";
 
 // order of InferAttributes & InferCreationAttributes is important.
 class Property extends Model<
@@ -49,7 +49,7 @@ class Property extends Model<
    * - hk: 香港市场
    * - cash: 现金
    */
-  declare market: string;
+  declare market: Market;
   /**
    * - 投资标的类型: 国内标的 or 国际标的
    * - china: 国内标的

@@ -4,7 +4,7 @@ import {
   PropertyHisAttributes,
 } from "../lib/db";
 import dayjs from "dayjs";
-import { Currency, MarketType } from "../lib/enums";
+import { Currency, Market } from "../lib/enums";
 import { getPriceHisWeek } from "./priceHis";
 import { getRateCurrencyHisWeek } from "./rateCurrencyHis";
 
@@ -28,13 +28,13 @@ interface IWeek {
 }
 
 async function getPropertyHisByWeeks({
-  marketType,
+  market,
   symbol,
   currency,
   propertyHis,
   weeks,
 }: {
-  marketType: MarketType;
+  market: Market;
   symbol: string;
   currency: Currency;
   /**
@@ -46,7 +46,7 @@ async function getPropertyHisByWeeks({
 }): Promise<PropertyHisWeek[]> {
   const endDate = weeks[0]!.dateEnd;
   const beginDate = weeks[weeks.length - 1]!.dateStart;
-  const p1 = getPriceHisWeek({ marketType, symbol, beginDate, endDate, weeks });
+  const p1 = getPriceHisWeek({ market, symbol, beginDate, endDate, weeks });
 
   const p2 = getRateCurrencyHisWeek({ currency, beginDate, endDate, weeks });
 
@@ -101,12 +101,12 @@ export function getWeekList(range: number): IWeek[] {
 }
 
 export async function getPropertyHisWeek({
-  marketType,
+  market,
   symbol,
   currency,
   propertyHis,
 }: {
-  marketType: MarketType;
+  market: Market;
   symbol: string;
   currency: Currency;
   /**
@@ -118,7 +118,7 @@ export async function getPropertyHisWeek({
   const weeks = getWeekList(15);
 
   const list = await getPropertyHisByWeeks({
-    marketType,
+    market,
     symbol,
     currency,
     propertyHis,
@@ -141,7 +141,7 @@ export async function getUserPropertyHisWeek({
   const pList = propertyList.map(async (property) => {
     const propertyHis = list.filter((his) => his.symbol === property.symbol);
     const weekHis = await getPropertyHisByWeeks({
-      marketType: property.marketType,
+      market: property.market,
       symbol: property.symbol,
       currency: property.currency,
       propertyHis,
