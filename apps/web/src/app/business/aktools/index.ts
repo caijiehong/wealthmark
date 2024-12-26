@@ -2,6 +2,7 @@ import { Currency, Market } from "@/app/lib/enums";
 import {
   ICurrency_boc_sina,
   IStock_hk_hist,
+  IStock_us_hist,
   IStock_us_spot_em,
   IStockHkSpotEmItem,
 } from "./types";
@@ -44,15 +45,16 @@ async function fetchAktools<T>(
  * 获取某只股票/基金的最新价格
  * @param symbol
  */
-export async function loadStokInfoUs(
+export async function stock_us_hist(
   symbol: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  period: "daily" | "weekly" | "monthly" = "daily"
 ) {
-  const res = await fetchAktools<any>("stock_us_hist", {
+  const res = await fetchAktools<IStock_us_hist[]>("stock_us_hist", {
     // 美股编码必须大写
     symbol: symbol.toUpperCase(),
-    period: "daily",
+    period,
     start_date: startDate,
     end_date: endDate,
   });

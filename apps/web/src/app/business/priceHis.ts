@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
-import { stock_hk_hist } from "./aktools";
+import { stock_hk_hist, stock_us_hist } from "./aktools";
 import { Market } from "../lib/enums";
+import { ModelStockUs } from "../lib/db";
 
 export async function getPriceHisWeek({
   market,
@@ -21,7 +22,7 @@ export async function getPriceHisWeek({
   }[] = [];
 
   const isCash = market === Market.CASH;
-  if (!isCash) {
+  if (market === Market.HK) {
     stockHist = await stock_hk_hist(
       symbol,
       beginDate.format("YYYYMMDD"),
@@ -34,6 +35,22 @@ export async function getPriceHisWeek({
         };
       });
     });
+  } else if (market === Market.US) {
+    const stockUsInfo = await ModelStockUs.getOne(symbol);
+    if (stockUsInfo) {
+      stockHist = await stock_us_hist(
+        stockUsInfo.akShareId,
+        beginDate.format("YYYYMMDD"),
+        endDate.format("YYYYMMDD")
+      ).then((res) => {
+        return res.map((item) => {
+          return {
+            stockDate: +dayjs(item["日期"]).format("YYYYMMDD"),
+            price: item["收盘"],
+          };
+        });
+      });
+    }
   }
 
   const list = weeks.map((week) => {
