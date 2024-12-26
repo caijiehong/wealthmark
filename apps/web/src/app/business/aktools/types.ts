@@ -50,3 +50,25 @@ export interface ICurrency_boc_sina {
    */
   ["央行中间价"]: number;
 }
+
+export interface IStock_us_spot_em {
+  ["序号"]: number;
+  ["名称"]: string;
+  ["最新价"]: number;
+  ["涨跌额"]: number;
+  ["涨跌幅"]: number;
+  ["开盘价"]: number;
+  ["最高价"]: number;
+  ["最低价"]: number;
+  ["昨收价"]: number;
+  ["总市值"]: number;
+  ["市盈率"]: number;
+  ["成交量"]: number;
+  ["成交额"]: number;
+  ["振幅"]: number;
+  ["换手率"]: number;
+  /**
+   * 105.META
+   */
+  ["代码"]: string;
+}

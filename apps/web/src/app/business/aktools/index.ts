@@ -2,6 +2,7 @@ import { Currency, Market } from "@/app/lib/enums";
 import {
   ICurrency_boc_sina,
   IStock_hk_hist,
+  IStock_us_spot_em,
   IStockHkSpotEmItem,
 } from "./types";
 
@@ -118,6 +119,16 @@ export async function currency_boc_sina(
     start_date,
     end_date,
   });
+
+  return res;
+}
+
+/**
+ * 获取美股全量股票清单
+ * @returns
+ */
+export async function stock_us_spot_em() {
+  const res = await fetchAktools<IStock_us_spot_em[]>("stock_us_spot_em");
 
   return res;
 }
