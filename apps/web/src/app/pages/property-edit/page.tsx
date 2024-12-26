@@ -5,12 +5,13 @@ import { useSearchParams } from "next/navigation";
 import FormPicker from "@/app/components/picker";
 import { IPropertyForm, useFormData } from "@/app/components/form/property";
 import {
-  market,
-  marketType,
-  currency,
+  mapMarket,
+  mapMarketType,
+  mapCurrency,
   Market,
   MarketType,
   Currency,
+  getCurrencyLabel,
 } from "@/app/lib/enums";
 
 const App = () => {
@@ -30,7 +31,11 @@ const App = () => {
     setDisableMarketType(isCash);
     setDisableCurrency(!isCash);
     if (isCash) {
-      form.setFieldValue("marketType", MarketType.cash);
+      form.setFieldsValue({
+        marketType: MarketType.cash,
+        name: getCurrencyLabel(values.currency),
+        symbol: values.currency,
+      });
     } else if (values.market === Market.cn) {
       form.setFieldValue("currency", Currency.cny);
     } else if (values.market === Market.hk) {
@@ -73,39 +78,38 @@ const App = () => {
       <FormPicker
         formItemName="market"
         formItemLabel="所属市场"
-        columns={[market]}
+        columns={[mapMarket]}
       />
       <FormPicker
         formItemName="marketType"
         formItemLabel="投资标的"
         disabled={disableMarketType}
-        columns={[marketType]}
+        columns={[mapMarketType]}
       />
       <FormPicker
         formItemName="currency"
         formItemLabel="币种"
         disabled={disableCurrency}
-        columns={[currency]}
+        columns={[mapCurrency]}
       />
-      {isCash ? null : (
-        <Form.Item
-          name="symbol"
-          label="股票基金代码"
-          rules={[{ required: true, message: "股票基金代码不能为空" }]}
-        >
-          <Input onBlur={onSymbolBlur} />
-        </Form.Item>
-      )}
-      {isCash ? null : (
-        <Form.Item
-          name="name"
-          label="资产名称"
-          disabled={true}
-          rules={[{ required: true, message: "资产名称不能为空" }]}
-        >
-          <Input />
-        </Form.Item>
-      )}
+      <Form.Item
+        hidden={isCash}
+        name="symbol"
+        label="股票基金代码"
+        rules={[{ required: true, message: "股票基金代码不能为空" }]}
+      >
+        <Input onBlur={onSymbolBlur} />
+      </Form.Item>
+      <Form.Item
+        hidden={isCash}
+        name="name"
+        label="资产名称"
+        disabled={true}
+        rules={[{ required: true, message: "资产名称不能为空" }]}
+      >
+        <Input />
+      </Form.Item>
+
       {id > 0 ? null : (
         <Form.Item
           name="amount"

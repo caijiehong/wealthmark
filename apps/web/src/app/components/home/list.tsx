@@ -16,7 +16,7 @@ const App: React.FC<{ properties: PropertyAttributes[] }> = ({
         {properties.map((property: PropertyAttributes) => (
           <List.Item
             key={property.symbol}
-            extra={property.symbol}
+            extra={property.symbol.toUpperCase()}
             onClick={() => {
               router.push(`/pages/property?id=${property.id}`);
             }}

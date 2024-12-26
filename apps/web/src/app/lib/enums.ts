@@ -4,7 +4,7 @@ export enum Market {
   us = "us",
   cash = "cash",
 }
-export const market = [
+export const mapMarket = [
   { label: "A股", value: Market.cn },
   { label: "港股", value: Market.hk },
   { label: "美股", value: Market.us },
@@ -17,7 +17,7 @@ export enum MarketType {
   cash = "cash",
 }
 
-export const marketType = [
+export const mapMarketType = [
   { label: "中国资产", value: MarketType.china },
   { label: "国际资产", value: MarketType.global },
   { label: "现金", value: MarketType.cash },
@@ -28,8 +28,12 @@ export enum Currency {
   usd = "usd",
 }
 
-export const currency = [
+export const mapCurrency = [
   { label: "人民币", value: Currency.cny },
   { label: "港币", value: Currency.hkd },
-  { label: "美金", value: Currency.usd },
+  { label: "美元", value: Currency.usd },
 ];
+
+export function getCurrencyLabel(currency: Currency) {
+  return mapCurrency.find((item) => item.value === currency)!.label;
+}

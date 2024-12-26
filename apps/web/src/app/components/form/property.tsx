@@ -29,18 +29,18 @@ export interface IPropertyForm {
    * - hk: 香港市场
    * - cash: 现金
    */
-  market: string;
+  market: Market;
   /**
    * - 投资标的类型: 国内标的 or 国际标的
    * - china: 国内标的
    * - global: 国际标的
    * - cash: 现金
    */
-  marketType: string;
+  marketType: MarketType;
   /**
    * - 资产币种: cny, usd, hkd
    */
-  currency: string;
+  currency: Currency;
 
   /**
    * - 资产星标
