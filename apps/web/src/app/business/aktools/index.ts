@@ -1,6 +1,7 @@
 import { Currency, Market } from "@/app/lib/enums";
 import {
   ICurrency_boc_sina,
+  IFund_name_em,
   IStock_hk_hist,
   IStock_us_hist,
   IStock_us_spot_em,
@@ -131,6 +132,16 @@ export async function currency_boc_sina(
  */
 export async function stock_us_spot_em() {
   const res = await fetchAktools<IStock_us_spot_em[]>("stock_us_spot_em");
+
+  return res;
+}
+
+/**
+ * fund_name_em
+ * 获取A股全量基金清单
+ */
+export async function fund_name_em() {
+  const res = await fetchAktools<IFund_name_em[]>("fund_name_em");
 
   return res;
 }

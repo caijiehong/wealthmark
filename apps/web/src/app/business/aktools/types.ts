@@ -86,3 +86,11 @@ export interface IStock_us_hist {
   ["涨跌额"]: number;
   ["换手率"]: number;
 }
+
+export interface IFund_name_em {
+  ["基金代码"]: string;
+  ["拼音缩写"]: string;
+  ["基金简称"]: string;
+  ["基金类型"]: string;
+  ["拼音全称"]: string;
+}

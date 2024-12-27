@@ -3,13 +3,22 @@ import React from "react";
 import { Button } from "antd-mobile";
 
 const App = () => {
-  const updateStockUs = async () => {
-    fetch(`/api/stockUs`, { method: "POST", body: JSON.stringify({}) });
+  const updateStockUs = async (action: string) => {
+    fetch(`/api/database`, {
+      method: "POST",
+      body: JSON.stringify({ action }),
+    });
   };
   return (
-    <Button color="primary" onClick={updateStockUs}>
-      更新美股数据库
-    </Button>
+    <div>
+      <Button color="primary" onClick={() => updateStockUs("stock_us_spot_em")}>
+        更新美股数据库
+      </Button>
+
+      <Button color="primary" onClick={() => updateStockUs("fund_name_em")}>
+        更新国内基金数据库
+      </Button>
+    </div>
   );
 };
 
