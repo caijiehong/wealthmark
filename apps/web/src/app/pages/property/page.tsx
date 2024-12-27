@@ -11,7 +11,11 @@ import {
 import { getUserInfo } from "@/app/lib/userInfo";
 import { getUserPropertyHisWeek } from "@/app/business/userPropertyHis";
 
-const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ id: string }>;
+}) => {
   const { id } = await searchParams;
   const { uid } = await getUserInfo();
   const propertyList = await modelProperty.getList(uid);
@@ -47,7 +51,11 @@ const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
   );
 };
 
-const App = async ({ searchParams }: { searchParams: { id: string } }) => {
+const App = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ id: string }>;
+}) => {
   return (
     <Suspense fallback="loading">
       <Page searchParams={searchParams} />

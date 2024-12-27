@@ -8,7 +8,7 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && ech
 RUN apk add ca-certificates
 
 # 安装依赖包，如需其他依赖包，请到alpine依赖包管理(https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.20&repo=&arch=&maintainer=)查找。
-RUN apk add --update --no-cache nodejs npm
+RUN apk add --update --no-cache nodejs npm python3
 
 # npm 源，选用国内镜像源以提高下载速度
 RUN npm config set registry https://mirrors.cloud.tencent.com/npm/

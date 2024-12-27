@@ -15,7 +15,7 @@
       "cache": false,
       "persistent": true
     },
-    "web#start": {
+    "start": {
       "cache": false
     }
   }

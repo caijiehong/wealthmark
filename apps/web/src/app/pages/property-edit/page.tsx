@@ -1,9 +1,13 @@
 import React, { Suspense } from "react";
 import Client from "./client";
 import { modelProperty, PropertyAttributes } from "@/app/lib/db";
-import { Currency, Market, MarketType } from "@/app/lib/enums";
+import { Currency, Market, MarketType, SecurityType } from "@/app/lib/enums";
 
-const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ id: string }>;
+}) => {
   const { id } = await searchParams;
   let property: PropertyAttributes | null = {
     id: 0,
@@ -17,6 +21,7 @@ const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
     flag: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
+    securityType: SecurityType.STOCK,
   };
   if (+id > 0) {
     property = await modelProperty.getOne(+id);
@@ -25,14 +30,14 @@ const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
   if (!property) {
     throw new Error("Property not found");
   }
-  return (
-    <Suspense fallback="loading">
-      <Client property={property} />
-    </Suspense>
-  );
+  return <Client property={property} />;
 };
 
-const App = async ({ searchParams }: { searchParams: { id: string } }) => {
+const App = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ id: string }>;
+}) => {
   return (
     <Suspense fallback="loading">
       <Page searchParams={searchParams} />

@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
   );
 }
-export async function Delete(req: NextRequest) {
+export async function DELETE(req: NextRequest) {
   return handleDelete<PropertyAttributes>(req, async (data) => {
     const userInfo = await getUserInfo();
     data.uid = userInfo.uid;

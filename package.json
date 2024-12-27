@@ -2,7 +2,7 @@
   "name": "wealthmark",
   "private": true,
   "scripts": {
-    "start": "turbo run web#start",
+    "start": "turbo run start",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
