@@ -2,7 +2,7 @@
   "name": "wealthmark",
   "private": true,
   "scripts": {
-    "start": "echo 'MYSQL_ADDRESS='$MYSQL_ADDRESS && turbo run start",
+    "start": "turbo run start",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",

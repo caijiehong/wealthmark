@@ -16,7 +16,8 @@
       "persistent": true
     },
     "start": {
-      "cache": false
+      "cache": false,
+      "env": ["MYSQL_USERNAME", "MYSQL_PASSWORD", "MYSQL_ADDRESS"]
     }
   }
 }
