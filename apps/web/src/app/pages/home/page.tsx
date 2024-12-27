@@ -9,7 +9,7 @@ const Page = async () => {
   const { uid } = await getUserInfo();
 
   const data = await modelProperty.getList(uid);
-  const { totalList } = await getUserPropertyHisWeek({
+  const { totalList, allList } = await getUserPropertyHisWeek({
     uid,
     propertyList: data,
   });
@@ -17,7 +17,7 @@ const Page = async () => {
   return (
     <>
       <Chart weekHis={totalList} />
-      <HomeList properties={data} />
+      <HomeList chartDataList={allList} />
     </>
   );
 };

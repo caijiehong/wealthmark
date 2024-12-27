@@ -24,7 +24,9 @@ const Page = async ({ searchParams }: { searchParams: { id: string } }) => {
   let propertyHisOri: PropertyHisAttributes[] = [];
   const chartData = await getUserPropertyHisWeek({ uid, propertyList });
   const weekHis =
-    chartData.allList.find((c) => c.symbol === property.symbol)?.weekHis || [];
+    chartData.allList.find((c) => c.property.symbol === property.symbol)
+      ?.weekHis || [];
+
   if (property) {
     propertyHisOri = await ModelPropertyHis.getList(
       property.uid,

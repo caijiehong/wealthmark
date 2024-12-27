@@ -1,7 +1,20 @@
 import { ModelPropertyHis, PropertyAttributes } from "../lib/db";
-import { getPropertyHisByWeeks, getWeekList } from "./propertyHis";
+import {
+  getPropertyHisByWeeks,
+  getWeekList,
+  PropertyHisWeek,
+} from "./propertyHis";
 
-export type IChartData = Awaited<ReturnType<typeof getUserPropertyHisWeek>>;
+export interface IChartSingleData {
+  property: PropertyAttributes;
+  weekHis: PropertyHisWeek[];
+  latestValue: number;
+}
+
+export interface IChartData {
+  totalList: PropertyHisWeek[];
+  allList: IChartSingleData[];
+}
 
 export async function getUserPropertyHisWeek({
   uid,
@@ -9,7 +22,7 @@ export async function getUserPropertyHisWeek({
 }: {
   uid: string;
   propertyList: PropertyAttributes[];
-}) {
+}): Promise<IChartData> {
   const weeks = getWeekList(15);
   const list = await ModelPropertyHis.getListByUid(uid);
 
@@ -24,10 +37,15 @@ export async function getUserPropertyHisWeek({
       weeks,
     });
 
-    return { symbol: property.symbol, weekHis };
+    const latestValue = weekHis[0]!.value;
+
+    return { property, weekHis, latestValue };
   });
 
-  const allList = await Promise.all(pList);
+  let allList = await Promise.all(pList);
+
+  allList = allList.sort((a, b) => b.latestValue - a.latestValue);
+
   const totalList = weeks
     .map((week, index) => {
       const dateStart = +week.dateStart.format("YYYYMMDD");
