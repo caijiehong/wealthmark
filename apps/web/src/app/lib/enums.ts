@@ -24,6 +24,7 @@ export enum MarketType {
   CHINA = "CHINA",
   GLOBAL = "GLOBAL",
   CASH = "CASH",
+  METAL = "METAL",
 }
 
 /**
@@ -33,6 +34,7 @@ export const mapMarketType = [
   { label: "中国资产", value: MarketType.CHINA },
   { label: "国际资产", value: MarketType.GLOBAL },
   { label: "现金", value: MarketType.CASH },
+  { label: "贵金属", value: MarketType.METAL },
 ];
 
 /**
@@ -65,6 +67,10 @@ export enum SecurityType {
   FUND = "FUND",
   ETF = "ETF",
   CASH = "CASH",
+  /**
+   * 贵金属
+   */
+  METAL = "METAL",
 }
 
 /**
@@ -75,4 +81,5 @@ export const mapSecurityType = [
   { label: "基金", value: SecurityType.FUND },
   { label: "ETF", value: SecurityType.ETF },
   { label: "现金", value: SecurityType.CASH },
+  { label: "贵金属", value: SecurityType.METAL },
 ];
