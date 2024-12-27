@@ -8,7 +8,7 @@ import {
   CreationAttributes,
 } from "sequelize";
 import { getDbInstance } from "./connect";
-import { Currency, Market, MarketType } from "../enums";
+import { Currency, Market, MarketType, SecurityType } from "../enums";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { revalidateTag } from "next/cache";
@@ -71,6 +71,11 @@ class Property extends Model<
    * - 1: 重要资产
    */
   declare flag: number;
+
+  /**
+   * - 股票还是基金
+   */
+  declare securityType: SecurityType;
 }
 export type PropertyAttributes = InferAttributes<
   Property,
@@ -119,6 +124,10 @@ async function defineModelProperty(sequelize: Sequelize) {
       flag: {
         type: DataTypes.TINYINT,
         defaultValue: 0,
+      },
+      securityType: {
+        type: DataTypes.CHAR(16),
+        defaultValue: SecurityType.STOCK,
       },
     },
     {

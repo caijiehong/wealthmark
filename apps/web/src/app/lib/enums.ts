@@ -56,3 +56,23 @@ export const mapCurrency = [
 export function getCurrencyLabel(currency: Currency) {
   return mapCurrency.find((item) => item.value === currency)!.label;
 }
+
+/**
+ * 股票或者基金
+ */
+export enum SecurityType {
+  STOCK = "STOCK",
+  FUND = "FUND",
+  ETF = "ETF",
+  CASH = "CASH",
+}
+
+/**
+ * 股票或者基金
+ */
+export const mapSecurityType = [
+  { label: "股票", value: SecurityType.STOCK },
+  { label: "基金", value: SecurityType.FUND },
+  { label: "ETF", value: SecurityType.ETF },
+  { label: "现金", value: SecurityType.CASH },
+];

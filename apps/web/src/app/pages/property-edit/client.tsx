@@ -7,9 +7,11 @@ import {
   mapMarket,
   mapMarketType,
   mapCurrency,
+  mapSecurityType,
   Market,
   MarketType,
   Currency,
+  SecurityType,
   getCurrencyLabel,
 } from "@/app/lib/enums";
 import { useRouter } from "next/navigation";
@@ -19,8 +21,6 @@ const App: React.FC<{ property: PropertyAttributes }> = ({ property }) => {
   const router = useRouter();
 
   const { form, onFinish } = useFormData(property);
-  const [disableMarketType, setDisableMarketType] = React.useState(false);
-  const [disableCurrency, setDisableCurrency] = React.useState(false);
 
   const [isCash, setIsCash] = React.useState(false);
   const isEdit = property.id > 0;
@@ -28,20 +28,25 @@ const App: React.FC<{ property: PropertyAttributes }> = ({ property }) => {
   const onValuesChange = (_changeVal: any, values: IPropertyForm) => {
     const isCash = values.market === Market.CASH;
     setIsCash(isCash);
-    setDisableMarketType(isCash);
-    setDisableCurrency(!isCash);
     if (isCash) {
       form.setFieldsValue({
         marketType: MarketType.CASH,
         name: getCurrencyLabel(values.currency),
         symbol: values.currency,
+        securityType: SecurityType.CASH,
       });
     } else if (values.market === Market.CN) {
-      form.setFieldValue("currency", Currency.CNY);
+      form.setFieldsValue({
+        currency: Currency.CNY,
+      });
     } else if (values.market === Market.HK) {
-      form.setFieldValue("currency", Currency.HKD);
+      form.setFieldsValue({
+        currency: Currency.HKD,
+      });
     } else if (values.market === Market.US) {
-      form.setFieldValue("currency", Currency.USD);
+      form.setFieldsValue({
+        currency: Currency.USD,
+      });
     }
   };
   const onSymbolBlur = async () => {
@@ -50,7 +55,10 @@ const App: React.FC<{ property: PropertyAttributes }> = ({ property }) => {
       return;
     }
     const market = form.getFieldValue("market");
-    const res = await fetch(`/api/aktools?market=${market}&symbol=${symbol}`);
+    const securityType = form.getFieldValue("securityType");
+    const res = await fetch(
+      `/api/symbol?market=${market}&symbol=${symbol}&securityType=${securityType}`
+    );
     const json = await res.json();
     if (json.data) {
       form.setFieldsValue({
@@ -83,15 +91,21 @@ const App: React.FC<{ property: PropertyAttributes }> = ({ property }) => {
         columns={[mapMarket]}
       />
       <FormPicker
+        disabled={isCash}
+        formItemName="securityType"
+        formItemLabel="资产类型"
+        columns={[mapSecurityType]}
+      />
+      <FormPicker
         formItemName="marketType"
         formItemLabel="投资标的"
-        disabled={disableMarketType}
+        disabled={isCash}
         columns={[mapMarketType]}
       />
       <FormPicker
         formItemName="currency"
         formItemLabel="币种"
-        disabled={disableCurrency}
+        disabled={!isCash}
         columns={[mapCurrency]}
       />
       <Form.Item
