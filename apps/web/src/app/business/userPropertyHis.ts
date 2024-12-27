@@ -17,6 +17,7 @@ export async function getUserPropertyHisWeek({
     const propertyHis = list.filter((his) => his.symbol === property.symbol);
     const weekHis = await getPropertyHisByWeeks({
       market: property.market,
+      securityType: property.securityType,
       symbol: property.symbol,
       currency: property.currency,
       propertyHis,

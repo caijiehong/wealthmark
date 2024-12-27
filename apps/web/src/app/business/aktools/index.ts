@@ -1,6 +1,7 @@
 import { Currency, Market } from "@/app/lib/enums";
 import {
   ICurrency_boc_sina,
+  IFund_etf_fund_info_em,
   IFund_name_em,
   IStock_hk_hist,
   IStock_us_hist,
@@ -142,6 +143,27 @@ export async function stock_us_spot_em() {
  */
 export async function fund_name_em() {
   const res = await fetchAktools<IFund_name_em[]>("fund_name_em");
+
+  return res;
+}
+
+/**
+ * fund_etf_fund_info_em
+ * 获取A股 ETF 历史净值数据
+ */
+export async function fund_etf_fund_info_em(
+  fund: string,
+  start_date: string,
+  end_date: string
+) {
+  const res = await fetchAktools<IFund_etf_fund_info_em[]>(
+    "fund_etf_fund_info_em",
+    {
+      fund,
+      start_date,
+      end_date,
+    }
+  );
 
   return res;
 }

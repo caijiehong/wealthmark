@@ -94,3 +94,18 @@ export interface IFund_name_em {
   ["基金类型"]: string;
   ["拼音全称"]: string;
 }
+
+export interface IFund_etf_fund_info_em {
+  // 净值日期: "2024-12-19T00:00:00.000",
+  // 单位净值: 0.9622,
+  // 累计净值: 0.9622,
+  // 日增长率: 0.21,
+  // 申购状态: "场内买入",
+  // 赎回状态: "场内卖出"
+  ["净值日期"]: string;
+  ["单位净值"]: number;
+  ["累计净值"]: number;
+  ["日增长率"]: number;
+  ["申购状态"]: string;
+  ["赎回状态"]: string;
+}

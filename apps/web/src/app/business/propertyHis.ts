@@ -1,6 +1,6 @@
 import { PropertyHisAttributes } from "../lib/db";
 import dayjs from "dayjs";
-import { Currency, Market } from "../lib/enums";
+import { Currency, Market, SecurityType } from "../lib/enums";
 import { getPriceHisWeek } from "./priceHis";
 import { getRateCurrencyHisWeek } from "./rateCurrencyHis";
 
@@ -26,12 +26,14 @@ interface IWeek {
 
 export async function getPropertyHisByWeeks({
   market,
+  securityType,
   symbol,
   currency,
   propertyHis,
   weeks,
 }: {
   market: Market;
+  securityType: SecurityType;
   symbol: string;
   currency: Currency;
   /**
@@ -43,7 +45,14 @@ export async function getPropertyHisByWeeks({
 }): Promise<PropertyHisWeek[]> {
   const endDate = weeks[0]!.dateEnd;
   const beginDate = weeks[weeks.length - 1]!.dateStart;
-  const p1 = getPriceHisWeek({ market, symbol, beginDate, endDate, weeks });
+  const p1 = getPriceHisWeek({
+    market,
+    symbol,
+    beginDate,
+    endDate,
+    weeks,
+    securityType,
+  });
 
   const p2 = getRateCurrencyHisWeek({ currency, beginDate, endDate, weeks });
 
@@ -95,32 +104,4 @@ export function getWeekList(range: number): IWeek[] {
   });
 
   return weeks;
-}
-
-export async function getPropertyHisWeek({
-  market,
-  symbol,
-  currency,
-  propertyHis,
-}: {
-  market: Market;
-  symbol: string;
-  currency: Currency;
-  /**
-   * - 资产历史记录数组
-   * - 按照 markDate 从大到小排序
-   */
-  propertyHis: PropertyHisAttributes[];
-}): Promise<PropertyHisWeek[]> {
-  const weeks = getWeekList(15);
-
-  const list = await getPropertyHisByWeeks({
-    market,
-    symbol,
-    currency,
-    propertyHis,
-    weeks,
-  });
-
-  return list.reverse();
 }
