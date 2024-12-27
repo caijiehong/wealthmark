@@ -1,25 +1,50 @@
-import { Sequelize, DataTypes, Model } from "sequelize";
+import {
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+  Sequelize,
+  DataTypes,
+  CreationAttributes,
+} from "sequelize";
+import { getDbInstance } from "./connect";
+import { Currency, Market, MarketType, SecurityType } from "../enums";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { revalidateTag } from "next/cache";
 
-type PropertyAttributes = {
+// order of InferAttributes & InferCreationAttributes is important.
+class Property extends Model<
+  InferAttributes<Property>,
+  InferCreationAttributes<Property>
+> {
+  // 'CreationOptional' is a special type that marks the field as optional
+  // when creating an instance of the model (such as using Model.create()).
+  declare id: CreationOptional<number>;
+  // timestamps!
+  // createdAt can be undefined during creation
+  declare createdAt: CreationOptional<Date>;
+  // updatedAt can be undefined during creation
+  declare updatedAt: CreationOptional<Date>;
   /**
    * 所属用户
    */
-  uid: string;
+  declare uid: string;
   /**
    * - 资产编号, 比如股票基金代码
    * - 如果是现金, 则为币种编号
    */
-  symbol: string;
+  declare symbol: string;
 
   /**
    * - 资产名称
    */
-  name: string;
+  declare name: string;
 
   /**
    * - 资产描述
    */
-  desc: string;
+  declare desc: string;
   /**
    * - 所属市场
    * - cn: 中国市场
@@ -27,74 +52,163 @@ type PropertyAttributes = {
    * - hk: 香港市场
    * - cash: 现金
    */
-  market: string;
+  declare market: Market;
   /**
    * - 投资标的类型: 国内标的 or 国际标的
-   * - cn: 国内标的
-   * - us: 国际标的
+   * - china: 国内标的
+   * - global: 国际标的
+   * - cash: 现金
    */
-  marketType: string;
+  declare marketType: MarketType;
   /**
    * - 资产币种: cny, usd, hkd
    */
-  currency: string;
-};
+  declare currency: Currency;
 
-class MProperty extends Model<PropertyAttributes> {
-  declare readonly id: number;
-  declare readonly createdAt: Date;
-  declare readonly updatedAt: Date;
-  declare uid: string;
-  declare symbol: string;
-  declare market: string;
-  declare marketType: string;
-  declare currency: string;
-  declare name: string;
-  declare desc: string;
+  /**
+   * - 资产星标
+   * - 0: 未标记
+   * - 1: 重要资产
+   */
+  declare flag: number;
+
+  /**
+   * - 股票还是基金
+   */
+  declare securityType: SecurityType;
 }
+export type PropertyAttributes = InferAttributes<
+  Property,
+  {
+    omit: never;
+  }
+>;
 
-export function defineModelProperty(sequelize: Sequelize) {
-  const Property = sequelize.define<MProperty>(
-    "Property",
+async function defineModelProperty(sequelize: Sequelize) {
+  const model = Property.init(
     {
+      id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
       uid: {
         type: DataTypes.CHAR(128),
-        allowNull: false,
       },
       symbol: {
         type: DataTypes.CHAR(128),
-        allowNull: false,
-      },
-      market: {
-        type: DataTypes.CHAR(32),
-        allowNull: false,
-      },
-      marketType: {
-        type: DataTypes.CHAR(32),
-        allowNull: false,
-      },
-      currency: {
-        type: DataTypes.CHAR(32),
-        allowNull: false,
       },
       name: {
-        type: DataTypes.CHAR(128),
-        allowNull: false,
+        type: DataTypes.STRING,
       },
       desc: {
-        type: DataTypes.CHAR(128),
-        allowNull: false,
+        type: DataTypes.TEXT,
+      },
+      market: {
+        type: DataTypes.CHAR(16),
+      },
+      marketType: {
+        type: DataTypes.CHAR(16),
+      },
+      currency: {
+        type: DataTypes.CHAR(16),
+      },
+      flag: {
+        type: DataTypes.TINYINT,
+        defaultValue: 0,
+      },
+      securityType: {
+        type: DataTypes.CHAR(16),
+        defaultValue: SecurityType.STOCK,
       },
     },
     {
       indexes: [
         {
-          unique: true,
-          fields: ["uid", "symbol"],
+          unique: false,
+          fields: ["uid"],
         },
       ],
+      sequelize,
+      tableName: "property",
     }
   );
+  await model.sync({ alter: true });
 
-  return Property;
+  return model;
 }
+
+let initStatus: ReturnType<typeof defineModelProperty> | null = null;
+
+function getModelProperty() {
+  if (!initStatus) {
+    const sequelize = getDbInstance();
+    initStatus = defineModelProperty(sequelize);
+  }
+  return initStatus;
+}
+
+async function getOne(id: number) {
+  const model = await getModelProperty();
+  const res = await model.findOne({
+    where: {
+      id,
+    },
+  });
+
+  return res ? res.toJSON() : null;
+}
+
+async function getList(uid: string): Promise<PropertyAttributes[]> {
+  "use cache";
+  cacheTag("property_list");
+  cacheLife("hours");
+
+  const model = await getModelProperty();
+  const res = await model.findAll({
+    where: {
+      uid,
+    },
+  });
+  return res.map((item) => item.toJSON());
+}
+
+async function insertOrUpdate(data: CreationAttributes<Property>) {
+  revalidateTag("property_list");
+  const model = await getModelProperty();
+  const item = await model.findOne({
+    where: {
+      uid: data.uid,
+      symbol: data.symbol,
+    },
+  });
+  if (item) {
+    await item.update(data);
+  } else {
+    await model.create(data);
+  }
+
+  return data;
+}
+
+async function remove(id: number, uid: string, symbol: string) {
+  revalidateTag("property_list");
+  const model = await getModelProperty();
+  await model.destroy({
+    where: {
+      id,
+      uid,
+      symbol,
+    },
+  });
+}
+
+export default { getOne, getList, insertOrUpdate, remove };

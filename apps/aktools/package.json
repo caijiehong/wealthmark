@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "python -m aktools --port 8888"
+    "start": "python -m aktools --port 8888 --host 0.0.0.0",
+    "dev": "python -m aktools --port 8888 --host 0.0.0.0"
   }
 }

@@ -1,66 +1,200 @@
-import { Sequelize, DataTypes, Model } from "sequelize";
+import {
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+  Sequelize,
+  DataTypes,
+  CreationAttributes,
+} from "sequelize";
+import { getDbInstance } from "./connect";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { revalidateTag } from "next/cache";
 
-type PropertyHisAttributes = {
+// order of InferAttributes & InferCreationAttributes is important.
+class PropertyHis extends Model<
+  InferAttributes<PropertyHis>,
+  InferCreationAttributes<PropertyHis>
+> {
+  // 'CreationOptional' is a special type that marks the field as optional
+  // when creating an instance of the model (such as using Model.create()).
+  declare id: CreationOptional<number>;
+  // timestamps!
+  // createdAt can be undefined during creation
+  declare createdAt: CreationOptional<Date>;
+  // updatedAt can be undefined during creation
+  declare updatedAt: CreationOptional<Date>;
   /**
    * 所属用户
    */
-  uid: string;
+  declare uid: string;
   /**
    * - 资产编号, 比如股票基金代码
    * - 如果是现金, 则为币种编号
    */
-  symbol: string;
+  declare symbol: string;
+
   /**
-   * 资产数量
-   */
-  amount: number;
-  /**
-   * 更新日
+   * - 记录日期
    * @example 20210101
    */
-  date: number;
-};
+  declare markDate: number;
 
-class MPropertyHis extends Model<PropertyHisAttributes> {
-  declare readonly id: number;
-  declare readonly createdAt: Date;
-  declare readonly updatedAt: Date;
-  declare uid: string;
-  declare symbol: string;
+  /**
+   * - 资产数额
+   */
   declare amount: number;
-  declare date: number;
 }
 
-export function defineModelPropertyHis(sequelize: Sequelize) {
-  const PropertyHis = sequelize.define<MPropertyHis>(
-    "PropertyHis",
+export type PropertyHisAttributes = InferAttributes<
+  PropertyHis,
+  {
+    omit: never;
+  }
+>;
+
+async function defineModelProperty(sequelize: Sequelize) {
+  const model = PropertyHis.init(
     {
+      id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
       uid: {
         type: DataTypes.CHAR(128),
-        allowNull: false,
       },
       symbol: {
         type: DataTypes.CHAR(128),
-        allowNull: false,
+      },
+      markDate: {
+        type: DataTypes.INTEGER.UNSIGNED,
       },
       amount: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-      },
-      date: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        type: DataTypes.INTEGER.UNSIGNED,
       },
     },
     {
+      sequelize,
       indexes: [
         {
           unique: false,
           fields: ["uid", "symbol"],
         },
       ],
+      tableName: "propertyHis",
     }
   );
+  await model.sync({ alter: true });
 
-  return PropertyHis;
+  return model;
 }
+
+let initStatus: ReturnType<typeof defineModelProperty> | null = null;
+
+function getModelPropertyHis() {
+  if (!initStatus) {
+    const sequelize = getDbInstance();
+    initStatus = defineModelProperty(sequelize);
+  }
+  return initStatus;
+}
+
+async function getOne(id: number) {
+  const model = await getModelPropertyHis();
+  const res = await model.findOne({
+    where: {
+      id,
+    },
+  });
+
+  return res ? res.toJSON() : null;
+}
+
+async function getList(
+  uid: string,
+  symbol: string
+): Promise<PropertyHisAttributes[]> {
+  const model = await getModelPropertyHis();
+  const res = await model.findAll({
+    where: {
+      uid,
+      symbol,
+    },
+    order: [["markDate", "DESC"]],
+  });
+  return res.map((item) => item.toJSON());
+}
+
+async function insertOrUpdate(data: CreationAttributes<PropertyHis>) {
+  revalidateTag("propertyHis_list");
+  const model = await getModelPropertyHis();
+  if (data.id && data.id > 0) {
+    await model.destroy({
+      where: {
+        uid: data.uid,
+        id: data.id,
+      },
+    });
+  }
+  const res = await model.create(data);
+
+  return res.toJSON();
+}
+
+async function deleteItem(uid: string, symbol: string, markDate: number) {
+  revalidateTag("propertyHis_list");
+  const model = await getModelPropertyHis();
+  const item = await model.destroy({
+    where: {
+      uid,
+      symbol,
+      markDate,
+    },
+  });
+  return item;
+}
+
+async function deleteList(uid: string, symbol: string) {
+  revalidateTag("propertyHis_list");
+  const model = await getModelPropertyHis();
+  const item = await model.destroy({
+    where: {
+      uid,
+      symbol,
+    },
+  });
+  return item;
+}
+
+async function getListByUid(uid: string) {
+  "use cache";
+  cacheTag("propertyHis_list");
+  cacheLife("hours");
+  const model = await getModelPropertyHis();
+  const res = await model.findAll({
+    where: {
+      uid,
+    },
+    order: [["markDate", "DESC"]],
+  });
+  return res.map((item) => item.toJSON());
+}
+
+export default {
+  getOne,
+  getList,
+  insertOrUpdate,
+  deleteItem,
+  deleteList,
+  getListByUid,
+};
