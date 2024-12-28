@@ -11,6 +11,7 @@ export interface PropertyHisWeek {
   price: number;
   value: number;
   percent?: number;
+  currencyRate: number;
 }
 
 interface IWeek {

@@ -1,4 +1,5 @@
 import { ModelPropertyHis, PropertyAttributes } from "../lib/db";
+import { Market } from "../lib/enums";
 import {
   getPropertyHisByWeeks,
   getWeekList,
@@ -41,9 +42,13 @@ export async function getUserPropertyHisWeek({
     });
 
     const latestValue = weekHis[0]!.value;
-    const latestPrice = weekHis[0]!.price;
+    const latestPrice =
+      property.market === Market.CASH
+        ? weekHis[0]!.currencyRate
+        : weekHis[0]!.price;
     const latestPercent = 0;
     const latestAmount = weekHis[0]!.amount;
+    const latestRate = weekHis[0]!.currencyRate;
 
     return {
       property,
@@ -52,6 +57,7 @@ export async function getUserPropertyHisWeek({
       latestPrice,
       latestPercent,
       latestAmount,
+      latestRate,
     };
   });
 
@@ -74,6 +80,7 @@ export async function getUserPropertyHisWeek({
         amount: 0,
         price: 0,
         value,
+        currencyRate: 1,
       };
     })
     .reverse();
