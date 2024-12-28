@@ -4,12 +4,7 @@ import { List, Tabs, SwiperRef, Swiper, Ellipsis } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import { IChartSingleData } from "@/app/business/userPropertyHis";
 import { Currency, MarketType, SecurityType } from "@/app/lib/enums";
-
-const formattedNumber = (num: number) =>
-  num.toLocaleString("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
+import { formattedNumber } from "@/app/lib/helper";
 
 const tabItems = [
   { key: "ALL", title: "全部" },
