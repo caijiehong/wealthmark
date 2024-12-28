@@ -20,7 +20,7 @@ const App: React.FC<{
 
   return (
     <>
-      <Canvas>
+      <Canvas pixelRatio={2}>
         <Chart data={chartData}>
           <Axis field="value" tickCount={10} />
           <Axis field="day" tickCount={8} />

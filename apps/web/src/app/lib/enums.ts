@@ -59,6 +59,18 @@ export function getCurrencyLabel(currency: Currency) {
   return mapCurrency.find((item) => item.value === currency)!.label;
 }
 
+export function getMarketLabel(market: Market) {
+  return mapMarket.find((item) => item.value === market)!.label;
+}
+
+export function getMarketTypeLabel(marketType: MarketType) {
+  return mapMarketType.find((item) => item.value === marketType)!.label;
+}
+
+export function getSecurityTypeLabel(securityType: SecurityType) {
+  return mapSecurityType.find((item) => item.value === securityType)!.label;
+}
+
 /**
  * 股票或者基金
  */
