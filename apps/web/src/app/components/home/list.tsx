@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { List, Tabs, SwiperRef, Swiper } from "antd-mobile";
+import { List, Tabs, SwiperRef, Swiper, Ellipsis } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import { IChartSingleData } from "@/app/business/userPropertyHis";
 import { Currency, MarketType, SecurityType } from "@/app/lib/enums";
@@ -11,12 +11,6 @@ const formattedNumber = (num: number) =>
     maximumFractionDigits: 0,
   });
 
-const formatName = (name: string) => {
-  if (name.length > 12) {
-    return name.slice(0, 12) + "...";
-  }
-  return name;
-};
 const tabItems = [
   { key: "ALL", title: "全部" },
   { key: "CASH", title: "现金" },
@@ -42,7 +36,7 @@ const ListItem1: React.FC<{ chartDataList: IChartSingleData[] }> = ({
             router.push(`/pages/property?id=${property.id}`);
           }}
         >
-          {formatName(property.name)}
+          <Ellipsis direction="end" content={property.name} />
         </List.Item>
       ))}
     </List>
