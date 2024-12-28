@@ -1,8 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { List, FloatingBubble, Tabs, SwiperRef, Swiper } from "antd-mobile";
+import { List, Tabs, SwiperRef, Swiper } from "antd-mobile";
 import { useRouter } from "next/navigation";
-import { AddOutline } from "antd-mobile-icons";
 import { IChartSingleData } from "@/app/business/userPropertyHis";
 import { Currency, MarketType, SecurityType } from "@/app/lib/enums";
 
@@ -118,19 +117,6 @@ const App: React.FC<{ chartDataList: IChartSingleData[] }> = ({
           <ListItem1 chartDataList={listCNY} />
         </Swiper.Item>
       </Swiper>
-      <FloatingBubble
-        axis="lock"
-        style={{
-          "--initial-position-bottom": "24px",
-          "--initial-position-right": "24px",
-          "--edge-distance": "24px",
-        }}
-        onClick={() => {
-          router.push(`/pages/property-edit`);
-        }}
-      >
-        <AddOutline fontSize={32} />
-      </FloatingBubble>
     </>
   );
 };
