@@ -47,6 +47,7 @@ const Com: React.FC<{
     SecurityType.FUND,
     SecurityType.ETF,
     SecurityType.CASH,
+    SecurityType.METAL,
   ].map((item) => {
     return {
       filter: (property: PropertyAttributes) => property.securityType === item,
