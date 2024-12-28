@@ -8,7 +8,10 @@ import {
 export interface IChartSingleData {
   property: PropertyAttributes;
   weekHis: PropertyHisWeek[];
+  latestAmount: number;
   latestValue: number;
+  latestPercent: number;
+  latestPrice: number;
 }
 
 export interface IChartData {
@@ -38,8 +41,18 @@ export async function getUserPropertyHisWeek({
     });
 
     const latestValue = weekHis[0]!.value;
+    const latestPrice = weekHis[0]!.price;
+    const latestPercent = 0;
+    const latestAmount = weekHis[0]!.amount;
 
-    return { property, weekHis, latestValue };
+    return {
+      property,
+      weekHis,
+      latestValue,
+      latestPrice,
+      latestPercent,
+      latestAmount,
+    };
   });
 
   let allList = await Promise.all(pList);
@@ -69,6 +82,7 @@ export async function getUserPropertyHisWeek({
     list.weekHis.forEach((item, index) => {
       item.percent = (item.value / totalList[index]!.value) * 100;
     });
+    list.latestPercent = list.weekHis[0]!.percent || 0;
     list.weekHis = list.weekHis.reverse();
   });
 
