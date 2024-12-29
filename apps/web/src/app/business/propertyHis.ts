@@ -83,9 +83,9 @@ export async function getPropertyHisByWeeks({
       dateStart,
       dateEnd,
       amount,
-      price,
+      price: market === Market.CASH ? currencyRate : price,
       value: amount * price * currencyRate,
-      currencyRate,
+      currencyRate: market === Market.CASH ? 1 : currencyRate,
     };
   });
 
