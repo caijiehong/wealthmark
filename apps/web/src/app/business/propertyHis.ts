@@ -95,9 +95,13 @@ export async function getPropertyHisByWeeks({
 export function getWeekList(range: number): IWeek[] {
   const now = dayjs();
 
+  // 如果 now 是星期天, 则返回上周星期六, 其他情况返回now 那一周的星期六
+  const latestSaturday =
+    now.day() === 0 ? now.subtract(1, "week") : now.endOf("week");
+
   const weeks = Array.from({ length: range }, (_, index) => {
-    const dateStart = now.subtract(index, "week").startOf("week");
-    const dateEnd = now.subtract(index, "week").endOf("week");
+    const dateStart = latestSaturday.subtract(index, "week").startOf("week");
+    const dateEnd = latestSaturday.subtract(index, "week").endOf("week");
     return {
       dateStart,
       dateEnd,
