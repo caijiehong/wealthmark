@@ -21,7 +21,7 @@ async function getPriceFromAkTools({
     price: number;
   }[] = [];
 
-  if (market === Market.HK) {
+  if (market === Market.HK && securityType !== SecurityType.FUND) {
     stockHist = await stock_hk_hist(symbol, beginDate, endDate).then((res) => {
       return res.map((item) => {
         return {
@@ -90,13 +90,11 @@ export async function getPriceHisWeek({
     endDate: endDate.format("YYYYMMDD"),
   });
 
-  const isCash = market === Market.CASH;
-
   const list = weeks.map((week) => {
     const dateStart = +week.dateStart.format("YYYYMMDD");
     const dateEnd = +week.dateEnd.format("YYYYMMDD");
 
-    let price = isCash ? 1 : 0;
+    let price = 1;
     const findStock = stockHist.find((his) => {
       if (his.stockDate <= dateEnd && his.stockDate >= dateStart) {
         return true;
