@@ -15,6 +15,7 @@ const App: React.FC<{
       amount: item.amount,
       value: item.value,
       percent: item.percent,
+      price: item.price,
     };
   });
 
@@ -26,6 +27,7 @@ const App: React.FC<{
           <Axis field="day" tickCount={8} />
           <Axis field="percent" tickCount={10} position="right" />
           <Line x="day" y="percent" />
+          <Line x="day" y="price" color={"orange"} />
           <Interval x="day" y="value" color="grey" />
         </Chart>
       </Canvas>
