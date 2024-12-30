@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { List, Tabs, SwiperRef, Swiper, Ellipsis } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import { IChartSingleData } from "@/app/business/userPropertyHis";
@@ -25,22 +25,41 @@ const HomeList: React.FC<{
   const [activeIndex, setActiveIndex] = useState(0);
   const [tabKey, setTabKey] = useState("ALL");
 
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    const index = tabItems.findIndex((item) => item.key === hash);
+    if (index !== -1 && index !== activeIndex) {
+      setActiveIndex(index);
+      setTabKey(hash);
+      setWeekHisSelected(list[index]!.combinedList);
+      swiperRef.current?.swipeTo(index);
+    }
+  });
+
   const [weekHisSelected, setWeekHisSelected] = useState<PropertyHisWeek[]>(
     list.find((item) => item.key === tabKey)!.combinedList
   );
 
+  const onTabsChange = (key: string) => {
+    const index = tabItems.findIndex((item) => item.key === key);
+    setActiveIndex(index);
+    setTabKey(key);
+    setWeekHisSelected(list[index]!.combinedList);
+    swiperRef.current?.swipeTo(index);
+    window.history.pushState(null, "", `#${key}`);
+  };
+
+  const onSwiperChange = (index: number) => {
+    const key = tabItems[index]!.key;
+    setActiveIndex(index);
+    setTabKey(key);
+    setWeekHisSelected(list[index]!.combinedList);
+    window.history.pushState(null, "", `#${key}`);
+  };
+
   return (
     <>
-      <Tabs
-        activeKey={tabItems[activeIndex]!.key}
-        onChange={(key) => {
-          const index = tabItems.findIndex((item) => item.key === key);
-          setActiveIndex(index);
-          setTabKey(key);
-          setWeekHisSelected(list[index]!.combinedList);
-          swiperRef.current?.swipeTo(index);
-        }}
-      >
+      <Tabs activeKey={tabItems[activeIndex]!.key} onChange={onTabsChange}>
         {tabItems.map((item) => (
           <Tabs.Tab title={item.title} key={item.key} />
         ))}
@@ -52,9 +71,7 @@ const HomeList: React.FC<{
         indicator={() => null}
         ref={swiperRef}
         defaultIndex={activeIndex}
-        onIndexChange={(index) => {
-          setActiveIndex(index);
-        }}
+        onIndexChange={onSwiperChange}
       >
         {list.map((item) => {
           return (
