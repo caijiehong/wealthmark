@@ -103,6 +103,17 @@ export async function getPriceHisWeek({
     });
     if (findStock) {
       price = findStock.price;
+    } else {
+      // 如果找不到区间正好的价格单位, 则取区间前最近的价格
+      const findStockBefore = stockHist.reverse().find((his) => {
+        if (his.stockDate < dateStart) {
+          return true;
+        }
+        return false;
+      });
+      if (findStockBefore) {
+        price = findStockBefore.price;
+      }
     }
 
     return {
