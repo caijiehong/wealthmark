@@ -42,6 +42,24 @@ export function getTabsFilter({
       title: "人民币",
       filter: (c: IChartSingleData) => c.property.currency === Currency.CNY,
     },
+    {
+      key: "STOCK",
+      title: "个股",
+      filter: (c: IChartSingleData) =>
+        c.property.securityType === SecurityType.STOCK,
+    },
+    {
+      key: "CHINA",
+      title: "中国",
+      filter: (c: IChartSingleData) =>
+        c.property.marketType === MarketType.CHINA,
+    },
+    {
+      key: "GLOBAL",
+      title: "海外",
+      filter: (c: IChartSingleData) =>
+        c.property.marketType === MarketType.GLOBAL,
+    },
   ];
 
   return filterList.map((item) => {
