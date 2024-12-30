@@ -84,9 +84,9 @@ async function defineModel_fund_name_em(sequelize: Sequelize) {
 
 let initStatus: ReturnType<typeof defineModel_fund_name_em> | null = null;
 
-function getModelFundNameEm() {
+async function getModelFundNameEm() {
   if (!initStatus) {
-    const sequelize = getDbInstance();
+    const sequelize = await getDbInstance();
     initStatus = defineModel_fund_name_em(sequelize);
   }
   return initStatus;

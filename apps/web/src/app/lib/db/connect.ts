@@ -4,7 +4,7 @@ import mysql2 from "mysql2";
 /**
  * 初始化数据库
  */
-function initDatabase() {
+async function initDatabase() {
   console.log("initDatabase");
 
   // 从环境变量中读取数据库配置
@@ -25,12 +25,14 @@ function initDatabase() {
     }
   );
 
+  await sequelize.sync();
+
   return sequelize;
 }
 
-let dbInstance: Sequelize | null = null;
+let dbInstance: Promise<Sequelize> | null = null;
 
-export function getDbInstance() {
+export async function getDbInstance() {
   if (dbInstance) {
     return dbInstance;
   }

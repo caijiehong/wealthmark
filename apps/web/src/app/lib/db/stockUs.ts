@@ -64,9 +64,9 @@ async function defineModelStockUs(sequelize: Sequelize) {
 
 let initStatus: ReturnType<typeof defineModelStockUs> | null = null;
 
-function getModelStockUs() {
+async function getModelStockUs() {
   if (!initStatus) {
-    const sequelize = getDbInstance();
+    const sequelize = await getDbInstance();
     initStatus = defineModelStockUs(sequelize);
   }
   return initStatus;
