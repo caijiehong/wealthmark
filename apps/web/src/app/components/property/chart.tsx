@@ -15,18 +15,29 @@ const App: React.FC<{
       amount: item.amount,
       value: item.value,
       percent: item.percent,
+      price: item.price,
     };
   });
 
   return (
     <>
-      <Canvas>
+      <Canvas pixelRatio={2}>
         <Chart data={chartData}>
           <Axis field="value" tickCount={10} />
           <Axis field="day" tickCount={8} />
           <Axis field="percent" tickCount={10} position="right" />
           <Line x="day" y="percent" />
           <Interval x="day" y="value" color="grey" />
+        </Chart>
+      </Canvas>
+      <Canvas pixelRatio={2}>
+        <Chart data={chartData}>
+          <Axis field="amount" tickCount={10} />
+          <Axis field="day" tickCount={8} />
+          <Axis field="price" tickCount={10} position="right" />
+
+          <Line x="day" y="price" color={"orange"} />
+          <Interval x="day" y="amount" color="grey" />
         </Chart>
       </Canvas>
     </>

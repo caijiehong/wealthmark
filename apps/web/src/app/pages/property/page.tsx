@@ -27,9 +27,9 @@ const Page = async ({
 
   let propertyHisOri: PropertyHisAttributes[] = [];
   const chartData = await getUserPropertyHisWeek({ uid, propertyList });
-  const weekHis =
-    chartData.allList.find((c) => c.property.symbol === property.symbol)
-      ?.weekHis || [];
+  const chartDataSingle = chartData.allList.find(
+    (c) => c.property.symbol === property.symbol
+  )!;
 
   if (property) {
     propertyHisOri = await ModelPropertyHis.getList(
@@ -40,9 +40,9 @@ const Page = async ({
 
   return (
     <>
-      <Info property={property} />
+      <Info property={property} chartData={chartDataSingle} />
 
-      <Chart weekHis={weekHis} />
+      <Chart weekHis={chartDataSingle.weekHis} />
 
       <His symbol={property.symbol} propertyHisOri={propertyHisOri} />
 

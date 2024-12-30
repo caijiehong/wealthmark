@@ -1,138 +1,101 @@
 "use client";
-import React, { useRef, useState } from "react";
-import { List, FloatingBubble, Tabs, SwiperRef, Swiper } from "antd-mobile";
+import React, { useEffect, useRef, useState } from "react";
+import { List, Tabs, SwiperRef, Swiper, Ellipsis } from "antd-mobile";
 import { useRouter } from "next/navigation";
-import { AddOutline } from "antd-mobile-icons";
 import { IChartSingleData } from "@/app/business/userPropertyHis";
-import { Currency, MarketType, SecurityType } from "@/app/lib/enums";
+import { formattedNumber } from "@/app/lib/helper";
+import { PropertyHisWeek } from "@/app/business/propertyHis";
+import { getTabsFilter } from "./tabsFilter";
+import Chart from "./chart";
 
-const formattedNumber = (num: number) =>
-  num.toLocaleString("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-
-const formatName = (name: string) => {
-  if (name.length > 12) {
-    return name.slice(0, 12) + "...";
-  }
-  return name;
-};
-const tabItems = [
-  { key: "ALL", title: "全部" },
-  { key: "CASH", title: "现金" },
-  { key: "FUND", title: "基金" },
-  { key: "HKD", title: "港币" },
-  { key: "USD", title: "美元" },
-  { key: "CNY", title: "人民币" },
-];
-
-const ListItem1: React.FC<{ chartDataList: IChartSingleData[] }> = ({
-  chartDataList,
-}) => {
+const HomeList: React.FC<{
+  allList: IChartSingleData[];
+  totalList: PropertyHisWeek[];
+}> = ({ allList, totalList }) => {
   const router = useRouter();
 
-  return (
-    <List>
-      {chartDataList.map(({ property, latestValue }) => (
-        <List.Item
-          key={property.symbol}
-          description={property.symbol}
-          extra={formattedNumber(latestValue)}
-          onClick={() => {
-            router.push(`/pages/property?id=${property.id}`);
-          }}
-        >
-          {formatName(property.name)}
-        </List.Item>
-      ))}
-    </List>
-  );
-};
+  const list = getTabsFilter({ chartDataList: allList, totalList });
 
-const App: React.FC<{ chartDataList: IChartSingleData[] }> = ({
-  chartDataList,
-}) => {
-  const router = useRouter();
+  const tabItems = list.map((item) => ({
+    key: item.key,
+    title: item.title,
+  }));
+
   const swiperRef = useRef<SwiperRef>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [tabKey, setTabKey] = useState("ALL");
 
-  const listCash = chartDataList.filter(
-    (c) => c.property.marketType === MarketType.CASH
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    const index = tabItems.findIndex((item) => item.key === hash);
+    if (index !== -1 && index !== activeIndex) {
+      setActiveIndex(index);
+      setTabKey(hash);
+      setWeekHisSelected(list[index]!.combinedList);
+      swiperRef.current?.swipeTo(index);
+    }
+  });
+
+  const [weekHisSelected, setWeekHisSelected] = useState<PropertyHisWeek[]>(
+    list.find((item) => item.key === tabKey)!.combinedList
   );
-  const listFund = chartDataList.filter(
-    (c) =>
-      c.property.securityType === SecurityType.FUND ||
-      c.property.securityType === SecurityType.ETF
-  );
-  const listHKD = chartDataList.filter(
-    (c) => c.property.currency === Currency.HKD
-  );
-  const listUSD = chartDataList.filter(
-    (c) => c.property.currency === Currency.USD
-  );
-  const listCNY = chartDataList.filter(
-    (c) => c.property.currency === Currency.CNY
-  );
+
+  const onTabsChange = (key: string) => {
+    const index = tabItems.findIndex((item) => item.key === key);
+    setActiveIndex(index);
+    setTabKey(key);
+    setWeekHisSelected(list[index]!.combinedList);
+    swiperRef.current?.swipeTo(index);
+    window.history.pushState(null, "", `#${key}`);
+  };
+
+  const onSwiperChange = (index: number) => {
+    const key = tabItems[index]!.key;
+    setActiveIndex(index);
+    setTabKey(key);
+    setWeekHisSelected(list[index]!.combinedList);
+    window.history.pushState(null, "", `#${key}`);
+  };
 
   return (
     <>
-      <Tabs
-        activeKey={tabItems[activeIndex]!.key}
-        onChange={(key) => {
-          const index = tabItems.findIndex((item) => item.key === key);
-          setActiveIndex(index);
-          swiperRef.current?.swipeTo(index);
-        }}
-      >
+      <Tabs activeKey={tabItems[activeIndex]!.key} onChange={onTabsChange}>
         {tabItems.map((item) => (
           <Tabs.Tab title={item.title} key={item.key} />
         ))}
       </Tabs>
+      <Chart weekHis={weekHisSelected} tabKey={tabKey} />
       <Swiper
         direction="horizontal"
         loop
         indicator={() => null}
         ref={swiperRef}
         defaultIndex={activeIndex}
-        onIndexChange={(index) => {
-          setActiveIndex(index);
-        }}
+        onIndexChange={onSwiperChange}
       >
-        <Swiper.Item>
-          <ListItem1 chartDataList={chartDataList} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listCash} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listFund} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listHKD} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listUSD} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listCNY} />
-        </Swiper.Item>
+        {list.map((item) => {
+          return (
+            <Swiper.Item key={item.key}>
+              <List>
+                {item.list.map(({ property, latestValue }) => (
+                  <List.Item
+                    key={property.symbol}
+                    description={property.symbol}
+                    extra={formattedNumber(latestValue)}
+                    onClick={() => {
+                      router.push(`/pages/property?id=${property.id}`);
+                    }}
+                  >
+                    <Ellipsis direction="end" content={property.name} />
+                  </List.Item>
+                ))}
+              </List>
+            </Swiper.Item>
+          );
+        })}
       </Swiper>
-      <FloatingBubble
-        axis="lock"
-        style={{
-          "--initial-position-bottom": "24px",
-          "--initial-position-right": "24px",
-          "--edge-distance": "24px",
-        }}
-        onClick={() => {
-          router.push(`/pages/property-edit`);
-        }}
-      >
-        <AddOutline fontSize={32} />
-      </FloatingBubble>
     </>
   );
 };
 
-export default App;
+export default HomeList;

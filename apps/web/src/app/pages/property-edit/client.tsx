@@ -23,11 +23,17 @@ const App: React.FC<{ property: PropertyAttributes }> = ({ property }) => {
   const { form, onFinish } = useFormData(property);
 
   const [isCash, setIsCash] = React.useState(false);
+  const [isNameDisabled, setIsNameDisabled] = React.useState(true);
   const isEdit = property.id > 0;
 
   const onValuesChange = (_changeVal: any, values: IPropertyForm) => {
     const isCash = values.market === Market.CASH;
     setIsCash(isCash);
+    setIsNameDisabled(
+      !(
+        values.market === Market.HK && values.securityType === SecurityType.FUND
+      )
+    );
     if (isCash) {
       form.setFieldsValue({
         marketType: MarketType.CASH,
@@ -121,7 +127,7 @@ const App: React.FC<{ property: PropertyAttributes }> = ({ property }) => {
         hidden={isCash}
         name="name"
         label="资产名称"
-        disabled={true}
+        disabled={isNameDisabled}
         rules={[{ required: true, message: "资产名称不能为空" }]}
       >
         <Input />

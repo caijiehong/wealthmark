@@ -1,0 +1,14 @@
+.info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 150px;
+}
+.info_label {
+  color: var(--adm-color-weak);
+}
+.info_value {
+  color: var(--adm-color-text);
+  font-size: 14px;
+}

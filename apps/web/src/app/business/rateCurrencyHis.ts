@@ -26,7 +26,7 @@ export async function getRateCurrencyHisWeek({
           // item["中行汇买价"] 字段代表汇率
           return {
             currencyDate: +dayjs(item["日期"]).format("YYYYMMDD"),
-            currencyRate: item["央行中间价"] / 100,
+            currencyRate: item["中行汇买价"] / 100,
           };
         })
         .reverse();
