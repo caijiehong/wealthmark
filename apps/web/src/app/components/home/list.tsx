@@ -3,73 +3,40 @@ import React, { useRef, useState } from "react";
 import { List, Tabs, SwiperRef, Swiper, Ellipsis } from "antd-mobile";
 import { useRouter } from "next/navigation";
 import { IChartSingleData } from "@/app/business/userPropertyHis";
-import { Currency, MarketType, SecurityType } from "@/app/lib/enums";
 import { formattedNumber } from "@/app/lib/helper";
+import { PropertyHisWeek } from "@/app/business/propertyHis";
+import { getTabsFilter } from "./tabsFilter";
+import Chart from "./chart";
 
-const tabItems = [
-  { key: "ALL", title: "全部" },
-  { key: "CASH", title: "现金" },
-  { key: "FUND", title: "基金" },
-  { key: "HKD", title: "港币" },
-  { key: "USD", title: "美元" },
-  { key: "CNY", title: "人民币" },
-];
-
-const ListItem1: React.FC<{ chartDataList: IChartSingleData[] }> = ({
-  chartDataList,
-}) => {
+const HomeList: React.FC<{
+  allList: IChartSingleData[];
+  totalList: PropertyHisWeek[];
+}> = ({ allList, totalList }) => {
   const router = useRouter();
 
-  return (
-    <List>
-      {chartDataList.map(({ property, latestValue }) => (
-        <List.Item
-          key={property.symbol}
-          description={property.symbol}
-          extra={formattedNumber(latestValue)}
-          onClick={() => {
-            router.push(`/pages/property?id=${property.id}`);
-          }}
-        >
-          <Ellipsis direction="end" content={property.name} />
-        </List.Item>
-      ))}
-    </List>
-  );
-};
+  const list = getTabsFilter({ chartDataList: allList, totalList });
 
-const App: React.FC<{ chartDataList: IChartSingleData[] }> = ({
-  chartDataList,
-}) => {
-  const router = useRouter();
+  const tabItems = list.map((item) => ({
+    key: item.key,
+    title: item.title,
+  }));
+
   const swiperRef = useRef<SwiperRef>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const listCash = chartDataList.filter(
-    (c) => c.property.marketType === MarketType.CASH
-  );
-  const listFund = chartDataList.filter(
-    (c) =>
-      c.property.securityType === SecurityType.FUND ||
-      c.property.securityType === SecurityType.ETF
-  );
-  const listHKD = chartDataList.filter(
-    (c) => c.property.currency === Currency.HKD
-  );
-  const listUSD = chartDataList.filter(
-    (c) => c.property.currency === Currency.USD
-  );
-  const listCNY = chartDataList.filter(
-    (c) => c.property.currency === Currency.CNY
+  const [weekHisSelected, setWeekHisSelected] = useState<PropertyHisWeek[]>(
+    list.find((item) => item.key === "ALL")!.combinedList
   );
 
   return (
     <>
+      <Chart weekHis={weekHisSelected} />
       <Tabs
         activeKey={tabItems[activeIndex]!.key}
         onChange={(key) => {
           const index = tabItems.findIndex((item) => item.key === key);
           setActiveIndex(index);
+          setWeekHisSelected(list[index]!.combinedList);
           swiperRef.current?.swipeTo(index);
         }}
       >
@@ -87,27 +54,29 @@ const App: React.FC<{ chartDataList: IChartSingleData[] }> = ({
           setActiveIndex(index);
         }}
       >
-        <Swiper.Item>
-          <ListItem1 chartDataList={chartDataList} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listCash} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listFund} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listHKD} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listUSD} />
-        </Swiper.Item>
-        <Swiper.Item>
-          <ListItem1 chartDataList={listCNY} />
-        </Swiper.Item>
+        {list.map((item) => {
+          return (
+            <Swiper.Item key={item.key}>
+              <List>
+                {item.list.map(({ property, latestValue }) => (
+                  <List.Item
+                    key={property.symbol}
+                    description={property.symbol}
+                    extra={formattedNumber(latestValue)}
+                    onClick={() => {
+                      router.push(`/pages/property?id=${property.id}`);
+                    }}
+                  >
+                    <Ellipsis direction="end" content={property.name} />
+                  </List.Item>
+                ))}
+              </List>
+            </Swiper.Item>
+          );
+        })}
       </Swiper>
     </>
   );
 };
 
-export default App;
+export default HomeList;

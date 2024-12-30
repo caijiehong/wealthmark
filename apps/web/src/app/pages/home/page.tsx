@@ -2,7 +2,6 @@ import React, { Suspense } from "react";
 import { getUserInfo } from "@/app/lib/userInfo";
 import { modelProperty } from "@/app/lib/db";
 import HomeList from "@/app/components/home/list";
-import Chart from "@/app/components/home/chart";
 import Tabs from "@/app/components/tabs";
 import { getUserPropertyHisWeek } from "@/app/business/userPropertyHis";
 
@@ -17,8 +16,7 @@ const Page = async () => {
 
   return (
     <Tabs activeKey="home">
-      <Chart weekHis={totalList} />
-      <HomeList chartDataList={allList} />
+      <HomeList allList={allList} totalList={totalList} />
     </Tabs>
   );
 };

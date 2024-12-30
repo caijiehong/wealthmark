@@ -10,6 +10,10 @@ export interface PropertyHisWeek {
   amount: number;
   price: number;
   value: number;
+  /**
+   * 资产占比
+   * @example 80 表示 80%
+   */
   percent?: number;
   currencyRate: number;
 }
