@@ -30,12 +30,29 @@ async function initDatabase() {
   return sequelize;
 }
 
-let dbInstance: Promise<Sequelize> | null = null;
+let waitInit: Promise<Sequelize> | null = null;
+let dbInstance: Sequelize | null = null;
 
 export async function getDbInstance() {
   if (dbInstance) {
     return dbInstance;
   }
-  dbInstance = initDatabase();
-  return dbInstance;
+  if (waitInit) {
+    return waitInit;
+  }
+
+  waitInit = initDatabase();
+
+  waitInit.then(
+    (instance) => {
+      dbInstance = instance;
+      return instance;
+    },
+    (e) => {
+      waitInit = null;
+      throw e;
+    }
+  );
+
+  return waitInit;
 }
