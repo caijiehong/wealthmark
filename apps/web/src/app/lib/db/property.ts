@@ -148,9 +148,9 @@ async function defineModelProperty(sequelize: Sequelize) {
 
 let initStatus: ReturnType<typeof defineModelProperty> | null = null;
 
-function getModelProperty() {
+async function getModelProperty() {
   if (!initStatus) {
-    const sequelize = getDbInstance();
+    const sequelize = await getDbInstance();
     initStatus = defineModelProperty(sequelize);
   }
   return initStatus;
