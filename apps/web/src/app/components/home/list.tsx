@@ -23,19 +23,20 @@ const HomeList: React.FC<{
 
   const swiperRef = useRef<SwiperRef>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [tabKey, setTabKey] = useState("ALL");
 
   const [weekHisSelected, setWeekHisSelected] = useState<PropertyHisWeek[]>(
-    list.find((item) => item.key === "ALL")!.combinedList
+    list.find((item) => item.key === tabKey)!.combinedList
   );
 
   return (
     <>
-      <Chart weekHis={weekHisSelected} />
       <Tabs
         activeKey={tabItems[activeIndex]!.key}
         onChange={(key) => {
           const index = tabItems.findIndex((item) => item.key === key);
           setActiveIndex(index);
+          setTabKey(key);
           setWeekHisSelected(list[index]!.combinedList);
           swiperRef.current?.swipeTo(index);
         }}
@@ -44,6 +45,7 @@ const HomeList: React.FC<{
           <Tabs.Tab title={item.title} key={item.key} />
         ))}
       </Tabs>
+      <Chart weekHis={weekHisSelected} tabKey={tabKey} />
       <Swiper
         direction="horizontal"
         loop
